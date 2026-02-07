@@ -58,17 +58,18 @@ enum OutputImageStatusEnum {
 }
 
 model OutputImages {
-  id        String  @id   @default(uuid())
-  imageUrl  String  @default("")
-  modelId   String
-  userId    String
-  prompt    String
-  falAiRequestId    String?
-  status    OutputImageStatusEnum   @default(Pending)
-  model     Model   @relation(fields: [modelId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String               @id   @default(uuid())
+  imageUrl       String               @default("")
+  modelId        String?
+  userId         String
+  prompt         String
+  falAiRequestId String?
+  status         OutputImageStatusEnum @default(Pending)
+  model          Model?               @relation(fields: [modelId], references: [id])
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
   @@index([falAiRequestId])
+  @@index([modelId])
 }
 
 model Packs {

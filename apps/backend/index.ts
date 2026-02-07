@@ -4,6 +4,7 @@ import {
   TrainModel,
   GenerateImage,
   GenerateImagesFromPack,
+  GeneratePackWithImages,
 } from "common/types";
 import { prismaClient } from "db";
 import { S3Client } from "bun";
@@ -47,6 +48,28 @@ app.get("/pre-signed-url", async (req, res) => {
     url,
     key,
   });
+});
+
+/** Presigned URLs for couple images (non-zipped, up to 10). Key: couple-images/{userId}/{uploadId}/{index}.{ext} */
+app.post("/presigned-url/images", authMiddleware, async (req, res) => {
+  const userId = req.userId!;
+  const uploadId = (req.body?.uploadId as string) || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  const count = Math.min(Math.max(Number(req.body?.count) || 1, 1), 10);
+  const keys: { url: string; key: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    const key = `couple-images/${userId}/${uploadId}/${i}.jpg`;
+    const url = S3Client.presign(key, {
+      method: "PUT",
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_KEY,
+      endpoint: process.env.ENDPOINT,
+      bucket: process.env.BUCKET_NAME,
+      expiresIn: 60 * 5,
+      type: "image/jpeg",
+    });
+    keys.push({ url, key });
+  }
+  res.json({ uploadId, keys });
 });
 
 app.post("/ai/training", authMiddleware, async (req, res) => {
@@ -133,8 +156,32 @@ app.post("/ai/generate", authMiddleware, async (req, res) => {
 });
 
 app.post("/pack/generate", authMiddleware, async (req, res) => {
-  const parsedBody = GenerateImagesFromPack.safeParse(req.body);
+  const withImages = GeneratePackWithImages.safeParse(req.body);
+  if (withImages.success) {
+    const { packId, imageUrls } = withImages.data;
+    const prompts = await prismaClient.packPrompts.findMany({
+      where: { packId },
+    });
+    if (prompts.length === 0) {
+      res.status(411).json({ message: "Pack has no prompts" });
+      return;
+    }
+    const requestIds: { request_id: string }[] = await Promise.all(
+      prompts.map((p) => falAiModel.generateImageFromReference(p.prompt, imageUrls))
+    );
+    const images = await prismaClient.outputImages.createManyAndReturn({
+      data: prompts.map((prompt, index) => ({
+        prompt: prompt.prompt,
+        userId: req.userId!,
+        imageUrl: "",
+        falAiRequestId: requestIds[index].request_id,
+      })) as never,
+    });
+    res.json({ images: images.map((i) => i.id) });
+    return;
+  }
 
+  const parsedBody = GenerateImagesFromPack.safeParse(req.body);
   if (!parsedBody.success) {
     res.status(411).json({
       message: "Input incorrect",
@@ -161,7 +208,7 @@ app.post("/pack/generate", authMiddleware, async (req, res) => {
     return;
   }
 
-  let requestIds: { request_id: string }[] = await Promise.all(
+  const requestIds: { request_id: string }[] = await Promise.all(
     prompts.map((prompt) =>
       falAiModel.generateImage(prompt.prompt, model.tensorPath!)
     )
@@ -356,13 +403,14 @@ app.post("/fal-ai/webhook/image", async (req, res) => {
 
   if (req.body.status === "ERROR") {
     res.status(411).json({});
-    prismaClient.outputImages.updateMany({
+    const imageUrl = req.body.payload?.images?.[0]?.url ?? "";
+    await prismaClient.outputImages.updateMany({
       where: {
         falAiRequestId: requestId,
       },
       data: {
         status: "Failed",
-        imageUrl: req.body.payload.images[0].url,
+        imageUrl,
       },
     });
     return;

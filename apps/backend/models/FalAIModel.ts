@@ -103,4 +103,27 @@ export class FalAIModel {
       imageUrl: response.data.images[0].url,
     };
   }
+
+  /**
+   * Generate image from reference images using ByteDance Seedream v4.5 edit.
+   * Uses fal-ai/bytedance/seedream/v4.5/edit (prompt + image_urls, up to 10).
+   * Returns request_id for webhook-based status updates.
+   */
+  public async generateImageFromReference(
+    prompt: string,
+    imageUrls: string[]
+  ): Promise<{ request_id: string }> {
+    const webhookUrl = `${process.env.WEBHOOK_BASE_URL}/fal-ai/webhook/image`;
+    const { request_id } = await fal.queue.submit(
+      "fal-ai/bytedance/seedream/v4.5/edit",
+      {
+        input: {
+          prompt,
+          image_urls: imageUrls,
+        },
+        webhookUrl,
+      }
+    );
+    return { request_id };
+  }
 }

@@ -28,4 +28,10 @@ export const GenerateImage = z.object({
 export const GenerateImagesFromPack = z.object({
     modelId: z.string(),
     packId: z.string()
-})
+});
+
+/** Pack generation using uploaded couple images (1–10) with Seedream 4.5 */
+export const GeneratePackWithImages = z.object({
+    packId: z.string(),
+    imageUrls: z.array(z.string().url()).min(1).max(10),
+});

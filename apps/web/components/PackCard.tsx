@@ -32,16 +32,16 @@ export interface TPack {
   createdAt?: string;
 }
 
-export function PackCard(props: TPack & { selectedModelId: string }) {
+export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
   const { getToken } = useAuth();
+  const canGenerate = props.coupleImageUrls.length >= 1;
 
-  // Collect all image URLs into an array
   const images = [
     props.imageUrl1,
     props.imageUrl2,
     props.imageUrl3,
     props.imageUrl4,
-  ].filter(Boolean); // Remove undefined values
+  ].filter(Boolean);
 
   const handleGenerate = async () => {
     try {
@@ -61,7 +61,7 @@ export function PackCard(props: TPack & { selectedModelId: string }) {
       `${BACKEND_URL}/pack/generate`,
       {
         packId: props.id,
-        modelId: props.selectedModelId,
+        imageUrls: props.coupleImageUrls,
       },
       {
         headers: {
@@ -153,6 +153,7 @@ export function PackCard(props: TPack & { selectedModelId: string }) {
               <Button
                 className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 cursor-pointer"
                 onClick={handleGenerate}
+                disabled={!canGenerate}
               >
                 Generate
               </Button>
