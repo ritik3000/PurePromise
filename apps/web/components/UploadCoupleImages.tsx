@@ -30,7 +30,7 @@ export function UploadCoupleImages({
   const { getToken } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadPhase, setUploadPhase] = useState<"idle" | "uploading">("idle");
+  const [uploadPhase, setUploadPhase] = useState<"idle" | "fetching-urls" | "uploading">("idle");
 
   const handleUpload = useCallback(
     async (files: File[]) => {
@@ -44,6 +44,7 @@ export function UploadCoupleImages({
       try {
         const token = await getToken();
         // Phase 1: fetch presigned URLs first
+        setUploadPhase("fetching-urls");
         const res = await axios.post<{ uploadId: string; keys: { url: string; key: string }[] }>(
           `${BACKEND_URL}/presigned-url/images`,
           { count: toAdd.length },
@@ -56,7 +57,9 @@ export function UploadCoupleImages({
         const newUrls: string[] = [];
         for (let i = 0; i < toAdd.length; i++) {
           const file = toAdd[i];
-          const { url, key } = keys[i];
+          const entry = keys[i];
+          if (!entry || !file) continue;
+          const { url, key } = entry;
           await axios.put(url, file, {
             headers: { "Content-Type": file.type || "image/jpeg" },
           });
