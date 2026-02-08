@@ -22,7 +22,7 @@ export default async function DashboardPage() {
               value="camera"
               className="data-[state=active]:bg-pink-500/70 backdrop-blur-sm data-[state=active]:text-pink-50 cursor-pointer px-3 py-1.5"
             >
-              Camera
+              My Images
             </TabsTrigger>
             <TabsTrigger
               value="generate"

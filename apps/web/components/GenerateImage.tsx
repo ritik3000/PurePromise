@@ -42,7 +42,7 @@ export function GenerateImage() {
     try {
       await toast.promise(generateImage(), {
         loading: "Starting image generation...",
-        success: "Generation started! Images will be available in about 10 minutes on the Camera page.",
+        success: "Generation started! Images will be available in about 10 minutes on the My Images page.",
         error: (err: unknown) => {
           const status = (err as { response?: { status: number; data?: { required?: number } } })?.response?.status;
           const data = (err as { response?: { data?: { required?: number } } })?.response?.data;
