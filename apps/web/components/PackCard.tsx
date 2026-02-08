@@ -50,7 +50,7 @@ export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
     try {
       toast.promise(generatePack(), {
         loading: "Starting pack generation...",
-        success: "Pack generation started successfully!",
+        success: "Generation started! Images will be available in about 10 minutes on the Camera page.",
         error: "Failed to start generation",
       });
     } catch (error) {

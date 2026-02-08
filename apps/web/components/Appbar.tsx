@@ -36,8 +36,16 @@ export function Appbar() {
               </Link>
             </motion.div>
 
-            {/* Auth & Credits */}
+            {/* Nav & Auth */}
             <div className="flex items-center md:gap-4 gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition"
+                asChild
+              >
+                <Link href="/contact">Contact Us</Link>
+              </Button>
               <SignedIn>
                 <Credits />
                 <Button

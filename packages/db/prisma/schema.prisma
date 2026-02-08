@@ -124,3 +124,24 @@ enum EyeColorEnum {
   Hazel
   Gray
 }
+
+model Feedback {
+  id        String   @id @default(uuid())
+  email     String
+  phone     String?
+  message   String
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model CreditRequest {
+  id        String   @id @default(uuid())
+  userId    String
+  phone     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}

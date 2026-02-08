@@ -74,6 +74,26 @@ app.get("/credits", authMiddleware, async (req, res) => {
   }
 });
 
+/** Record that the user has requested more credits (auth required). Optional phone stored. */
+app.post("/credits/request", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId!;
+    const phone = typeof req.body?.phone === "string" ? req.body.phone.trim() || null : null;
+    if (phone && phone.length > 30) {
+      res.status(400).json({ message: "Phone number must be at most 30 characters" });
+      return;
+    }
+    await prismaClient.creditRequest.create({ data: { userId, phone } });
+    res.status(201).json({ message: "Your request for more credits has been recorded. We'll be in touch." });
+  } catch (error) {
+    console.error("Error recording credit request:", error);
+    res.status(500).json({
+      message: "Error recording request",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 app.post("/presigned-url/images", authMiddleware, async (req, res) => {
   const userId = req.userId!;
   const uploadId = (req.body?.uploadId as string) || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
@@ -564,6 +584,63 @@ app.get("/model/status/:modelId", authMiddleware, async (req, res) => {
       message: "Failed to check model status",
     });
     return;
+  }
+});
+
+/** Submit feedback (contact form). Public; optional auth links feedback to user. */
+app.post("/feedback", async (req, res) => {
+  try {
+    const email = typeof req.body?.email === "string" ? req.body.email.trim() : "";
+    const phone = typeof req.body?.phone === "string" ? req.body.phone.trim() || null : null;
+    const message = typeof req.body?.message === "string" ? req.body.message.trim() : "";
+    if (!email || !message) {
+      res.status(400).json({ message: "Email and message are required" });
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400).json({ message: "Invalid email address" });
+      return;
+    }
+    if (phone && phone.length > 30) {
+      res.status(400).json({ message: "Phone number must be at most 30 characters" });
+      return;
+    }
+    if (message.length > 5000) {
+      res.status(400).json({ message: "Message must be at most 5000 characters" });
+      return;
+    }
+
+    let userId: string | null = null;
+    const authHeader = req.headers["authorization"];
+    const token = authHeader?.split(" ")[1];
+    if (token && process.env.CLERK_JWT_PUBLIC_KEY) {
+      try {
+        const jwt = await import("jsonwebtoken");
+        const formattedKey = process.env.CLERK_JWT_PUBLIC_KEY.replace(/\\n/g, "\n");
+        const decoded = jwt.verify(token, formattedKey, {
+          algorithms: ["RS256"],
+          issuer:
+            process.env.CLERK_ISSUER ||
+            "http://localhost:3000 || https://fe-staging.dxdev.space/",
+          complete: true,
+        }) as { payload?: { sub?: string } };
+        if (decoded?.payload?.sub) userId = decoded.payload.sub;
+      } catch {
+        // ignore invalid token; submit as anonymous
+      }
+    }
+
+    const feedback = await prismaClient.feedback.create({
+      data: { email, phone, message, userId },
+    });
+    res.status(201).json({ id: feedback.id, message: "Thank you for your feedback." });
+  } catch (error) {
+    console.error("Error submitting feedback:", error);
+    res.status(500).json({
+      message: "Error submitting feedback",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 });
 

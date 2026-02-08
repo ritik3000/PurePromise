@@ -24,6 +24,7 @@
         "db": "*",
         "express": "^4.21.2",
         "jsonwebtoken": "^9.0.2",
+        "razorpay": "^2.9.6",
         "svix": "^1.57.0"
     }
 }
