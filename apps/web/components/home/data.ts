@@ -64,17 +64,17 @@ export const carouselImages = [
     style: "Elegant",
   },
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/valentine3.jpeg",
-    title: "Romantic Lifestyle",
-    description: "Natural and intimate couple moments",
-    style: "Romantic",
-  },
-  {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindufinal.jpg",
+    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/europe3.jpeg",
     title: "Creative Couple",
     description: "Artistic couple shots with unique styling",
     style: "Creative",
   },
+  {
+    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/valentine3.jpeg",
+    title: "Romantic Lifestyle",
+    description: "Natural and intimate couple moments",
+    style: "Romantic",
+  }
 ];
 
 export const brands = [
