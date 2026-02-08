@@ -171,11 +171,11 @@ router.post("/clerk", async (req, res) => {
             profilePicture: evt.data.profile_image_url,
           },
         });
-        // Ensure UserCredit record exists (id is Clerk user id, used as userId across the app)
+        // Ensure UserCredit record exists (id is Clerk user id). New users get 400 credits.
         await prismaClient.userCredit.upsert({
           where: { userId: id },
           update: {},
-          create: { userId: id, amount: 0 },
+          create: { userId: id, amount: 400 },
         });
         break;
       }

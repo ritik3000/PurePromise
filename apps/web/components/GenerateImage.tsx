@@ -93,7 +93,7 @@ export function GenerateImage() {
 
         <div className="flex flex-col items-end gap-2 pt-4">
           <p className="text-sm text-muted-foreground">
-            100 credits will be deducted per image
+            25 credits will be deducted per image
           </p>
           <Button
             onClick={handleGenerate}

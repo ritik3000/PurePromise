@@ -4,7 +4,7 @@ import { prismaClient } from "db";
 export const CREDITS_TRAINING = 10;
 
 /** Credit cost per single image generation (generate image endpoint) */
-export const CREDITS_PER_IMAGE = 100;
+export const CREDITS_PER_IMAGE = 25;
 
 /**
  * Get current credit balance for a user (Clerk user id).

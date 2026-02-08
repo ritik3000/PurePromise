@@ -174,7 +174,7 @@ app.post("/ai/training", authMiddleware, async (req, res) => {
   }
 });
 
-/** Generate single image from reference images (5–10) + prompt. 100 credits. */
+/** Generate single image from reference images (5–10) + prompt. 25 credits. */
 app.post("/ai/generate-from-images", authMiddleware, async (req, res) => {
   const userId = req.userId!;
   const enough = await hasEnoughCredits(userId, CREDITS_PER_IMAGE);
@@ -336,8 +336,11 @@ app.post("/pack/generate", authMiddleware, async (req, res) => {
 
 
 app.get("/pack/bulk", async (req, res) => {
-  const packs = await prismaClient.packs.findMany({});
+  const packs = await prismaClient.packs.findMany({
+    orderBy: [ { id: "asc" }, { name: "asc" }],
+  });
 
+  res.set("Cache-Control", "no-store");
   res.json({
     packs,
   });

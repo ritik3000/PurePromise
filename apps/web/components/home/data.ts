@@ -38,6 +38,7 @@ export const testimonials = [
   },
   {
     text: "Everything looked so real and elegant, and the process was unbelievably easy to use. It felt like our moments were captured perfectly without any stress.",
+    author: "Ankit",
     role: "Sales Manager",
     avatar: avatarUrl("Nisha Agrawal"),
   },

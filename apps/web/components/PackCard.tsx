@@ -172,11 +172,6 @@ export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
             </CardContent>
 
             <CardFooter className="p-4 pt-0 flex flex-col gap-2">
-              {(props.creditCost ?? 0) > 0 && (
-                <p className="text-xs text-muted-foreground">
-                  {props.creditCost} credits will be deducted
-                </p>
-              )}
               <Button
                 className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 cursor-pointer"
                 onClick={handleGenerate}
