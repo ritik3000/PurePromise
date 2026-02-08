@@ -16,9 +16,13 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "PurePromise - AI Pre-Wedding Photos",
+  title: "PurePromise - AI Couple Photos",
   description:
-    "Create stunning pre-wedding photos of couples with AI-powered technology. Transform your love story into beautiful memories.",
+    "Create stunning couple photos with AI. Upload a photo, choose a romantic scene, and get beautiful couple portraits in seconds.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

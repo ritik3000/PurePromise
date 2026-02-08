@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import toast from "react-hot-toast";
 import { BACKEND_URL } from "@/app/config";
 
 export function RequestMoreCredits() {
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { getToken } = useAuth();
-  const { toast } = useToast();
 
   async function handleRequest(e: React.FormEvent) {
     e.preventDefault();
@@ -20,11 +19,7 @@ export function RequestMoreCredits() {
     try {
       const token = await getToken();
       if (!token) {
-        toast({
-          title: "Sign in required",
-          description: "Please sign in to request more credits.",
-          variant: "destructive",
-        });
+        toast.error("Please sign in to request more credits.");
         return;
       }
       const res = await fetch(`${BACKEND_URL}/credits/request`, {
@@ -37,24 +32,13 @@ export function RequestMoreCredits() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        toast({
-          title: "Request failed",
-          description: data.message || "Something went wrong. Please try again.",
-          variant: "destructive",
-        });
+        toast.error(data.message || "Something went wrong. Please try again.");
         return;
       }
-      toast({
-        title: "Request successfully recorded",
-        description: "We'll be in touch.",
-      });
+      toast.success("Request successfully recorded. We'll be in touch.");
       setPhone("");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to submit request. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to submit request. Please try again.");
     } finally {
       setSubmitting(false);
     }

@@ -13,7 +13,7 @@ export function Footer() {
           </div>
 
           <p className="mt-4 max-w-sm text-muted-foreground">
-            Create beautiful pre-wedding photos of couples with AI-powered technology. Transform your love story into stunning memories.
+            Create beautiful couple photos with AI-powered technology. Upload a photo, choose a scene, and get stunning portraits in seconds.
           </p>
 
           <Link

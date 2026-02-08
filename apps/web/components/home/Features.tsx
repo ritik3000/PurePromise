@@ -6,8 +6,8 @@ import { Camera, Wand2, Users, Clock } from "lucide-react";
 const features = [
   {
     icon: <Camera className="w-6 h-6" />,
-    title: "Wedding-Ready Quality",
-    description: "Professional pre-wedding couple photos generated in seconds",
+    title: "Studio Quality",
+    description: "Professional couple photos generated in seconds",
     gradient: "from-rose-500 to-pink-500",
   },
   {
@@ -19,13 +19,13 @@ const features = [
   {
     icon: <Users className="w-6 h-6" />,
     title: "Couple Collections",
-    description: "Create stunning pre-wedding photos for couples",
+    description: "Create stunning couple photos for you and your partner",
     gradient: "from-amber-500 to-rose-500",
   },
   {
     icon: <Clock className="w-6 h-6" />,
     title: "Instant Delivery",
-    description: "Get your pre-wedding photos in minutes, not days",
+    description: "Get your couple photos in minutes, not days",
     gradient: "from-rose-400 to-amber-400",
   },
 ];

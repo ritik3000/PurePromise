@@ -1,6 +1,6 @@
 # PurePromise Web Frontend
 
-The Next.js frontend application for PurePromise - an AI-powered pre-wedding photo generation platform for couples.
+The Next.js frontend application for PurePromise - an AI-powered couple photo generation platform.
 
 ## Features
 
