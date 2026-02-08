@@ -11,7 +11,6 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import CustomLabel from "./ui/customLabel";
-import { GlowEffect } from "./GlowEffect";
 import { creditUpdateEvent } from "@/hooks/use-credits";
 
 const MIN_IMAGES = 5;
@@ -25,29 +24,37 @@ export function GenerateImage() {
 
   const canGenerate = prompt.trim().length > 0 && imageUrls.length >= MIN_IMAGES && imageUrls.length <= MAX_IMAGES;
 
+  const generateImage = async () => {
+    const token = await getToken();
+    await axios.post(
+      `${BACKEND_URL}/ai/generate-from-images`,
+      { prompt: prompt.trim(), imageUrls },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    creditUpdateEvent.dispatchEvent(new Event("creditUpdate"));
+    setPrompt("");
+  };
+
   const handleGenerate = async () => {
     if (!canGenerate) return;
 
     setIsGenerating(true);
     try {
-      const token = await getToken();
-      await axios.post(
-        `${BACKEND_URL}/ai/generate-from-images`,
-        { prompt: prompt.trim(), imageUrls },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      creditUpdateEvent.dispatchEvent(new Event("creditUpdate"));
-      toast.success("Image generation started!");
-      setPrompt("");
-    } catch (error: unknown) {
-      const status = (error as { response?: { status: number; data?: { message?: string; required?: number } } })?.response?.status;
-      const data = (error as { response?: { data?: { message?: string; required?: number } } })?.response?.data;
-      if (status === 402) {
-        const required = data?.required ?? 100;
-        toast.error(`Insufficient credits (need ${required}). Add credits to continue.`);
-      } else {
-        toast.error("Failed to generate image");
-      }
+      await toast.promise(generateImage(), {
+        loading: "Starting image generation...",
+        success: "Image generation started successfully!",
+        error: (err: unknown) => {
+          const status = (err as { response?: { status: number; data?: { required?: number } } })?.response?.status;
+          const data = (err as { response?: { data?: { required?: number } } })?.response?.data;
+          if (status === 402) {
+            const required = data?.required ?? 100;
+            return `Insufficient credits (need ${required}). Add credits to continue.`;
+          }
+          return "Failed to start generation";
+        },
+      });
+    } catch {
+      // Error already shown by toast.promise
     } finally {
       setIsGenerating(false);
     }
@@ -88,25 +95,13 @@ export function GenerateImage() {
           <p className="text-sm text-muted-foreground">
             100 credits will be deducted per image
           </p>
-          <div className="relative">
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating || !canGenerate}
-              variant={"outline"}
-              className="relative z-20 cursor-pointer"
-            >
-              Generate Image <Sparkles size={24} />
-            </Button>
-            {canGenerate && (
-              <GlowEffect
-                colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
-                mode="colorShift"
-                blur="soft"
-                duration={3}
-                scale={0.9}
-              />
-            )}
-          </div>
+          <Button
+            onClick={handleGenerate}
+            disabled={isGenerating || !canGenerate}
+            className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            Generate Image <Sparkles size={24} />
+          </Button>
         </div>
       </div>
     </motion.div>

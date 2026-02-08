@@ -4,7 +4,6 @@ import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ThemeToggle } from "./ThemeToggle";
 import { Logo } from "./Logo";
 import { Credits } from "./navbar/Credits";
 
@@ -77,7 +76,6 @@ export function Appbar() {
                   </Button>
                 </motion.div>
               </SignedOut>
-              <ThemeToggle />
             </div>
           </div>
         </motion.div>

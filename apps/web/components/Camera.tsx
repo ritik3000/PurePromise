@@ -14,13 +14,8 @@ import Image from "next/image";
 export interface TImage {
   id: string;
   imageUrl: string;
-  modelId: string;
-  userId: string;
-  prompt: string;
-  falAiRequestId: string;
   status: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 export function Camera() {
@@ -128,12 +123,7 @@ export function Camera() {
                   status={image.status}
                   imageUrl={image.imageUrl}
                   onClick={() => handleImageClick(image, index)}
-                  modelId={image.modelId}
-                  userId={image.userId}
-                  prompt={image.prompt}
-                  falAiRequestId={image.falAiRequestId}
                   createdAt={image.createdAt}
-                  updatedAt={image.updatedAt}
                 />
               </div>
             ))}
@@ -166,16 +156,13 @@ export function Camera() {
               className="relative w-full h-full flex flex-col items-center justify-center"
             >
               <div className="absolute top-4 left-4 right-4 text-white">
-                <p className="text-lg font-medium truncate">
-                  {selectedImage?.prompt}
-                </p>
                 <p className="text-sm">{formatDate(selectedImage.createdAt)}</p>
               </div>
 
               <div className="relative aspect-square w-full">
                 <Image
                   src={selectedImage.imageUrl}
-                  alt={selectedImage.prompt || "Generated image"}
+                  alt="Generated image"
                   fill
                   className="object-contain"
                   priority
@@ -190,7 +177,7 @@ export function Camera() {
                   onClick={() =>
                     handleDownload(
                       selectedImage.imageUrl,
-                      selectedImage.prompt || "generated-image"
+                      `generated-image-${selectedImage.id}`
                     )
                   }
                   disabled={isDownloading || !selectedImage.imageUrl}

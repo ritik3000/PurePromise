@@ -47,11 +47,9 @@ export function useCredits() {
     };
 
     creditUpdateEvent.addEventListener("creditUpdate", handleCreditUpdate);
-    const interval = setInterval(fetchCredits, 60 * 1000);
 
     return () => {
       creditUpdateEvent.removeEventListener("creditUpdate", handleCreditUpdate);
-      clearInterval(interval);
     };
   }, [fetchCredits]);
 

@@ -1,6 +1,5 @@
 import { GenerateImage } from "@/components/GenerateImage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Train } from "@/components/Train";
 import { Packs } from "@/components/Packs";
 import { Camera } from "@/components/Camera";
 import { redirect } from "next/navigation";
@@ -37,12 +36,6 @@ export default async function DashboardPage() {
             >
               Packs
             </TabsTrigger>
-            <TabsTrigger
-              value="train"
-              className="data-[state=active]:bg-pink-500/70 backdrop-blur-sm data-[state=active]:text-pink-50 cursor-pointer px-3 py-1.5"
-            >
-              Train<span className="md:block hidden pl-1">Model</span>
-            </TabsTrigger>
           </TabsList>
 
           <div className="mt-8 bg-card rounded-lg">
@@ -63,12 +56,6 @@ export default async function DashboardPage() {
               className="mt-0 focus-visible:outline-none"
             >
               <Packs />
-            </TabsContent>
-            <TabsContent
-              value="train"
-              className="mt-0 focus-visible:outline-none"
-            >
-              <Train />
             </TabsContent>
           </div>
         </Tabs>

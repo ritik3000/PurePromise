@@ -6,7 +6,7 @@ import { TImage } from "./Camera";
 interface ImageCardProps extends TImage {
   onClick: () => void;
 }
-export function ImageCard({ id, status, imageUrl, onClick ,prompt}: ImageCardProps) {
+export function ImageCard({ id, status, imageUrl, onClick }: ImageCardProps) {
   if (!imageUrl) return null;
 
   return (
@@ -23,7 +23,7 @@ export function ImageCard({ id, status, imageUrl, onClick ,prompt}: ImageCardPro
         />
       </div>
       <div className="opacity-0 absolute transition-normal duration-200 group-hover:opacity-100 flex items-center justify-between bottom-0 left-0 right-0 p-4 bg-opacity-70 text-white line-clamp-1 ">
-        <p>{prompt}</p>
+        <p>Generated image</p>
         <span className="flex items-center justify-between bg-primary-foreground text-muted-foreground rounded-md px-2 py-1">
           <ArrowDown />
         </span>

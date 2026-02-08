@@ -142,8 +142,7 @@ export function UploadCoupleImages({
           ) : (
             <>
               <p className="text-sm text-muted-foreground mb-2">
-                Drag and drop or browse ({imageUrls.length}/{maxImages}
-                {minImages > 0 && imageUrls.length < minImages && ` — min ${minImages}`})
+                Drag and drop or browse ({imageUrls.length}/{maxImages})
               </p>
               <Button
                 variant="outline"
@@ -166,6 +165,12 @@ export function UploadCoupleImages({
             </>
           )}
         </div>
+        {minImages > 0 && (
+          <p className="text-xs text-muted-foreground">
+            * minimum of {minImages} images requried
+
+          </p>
+        )}
         {imageUrls.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             {imageUrls.map((url, index) => (

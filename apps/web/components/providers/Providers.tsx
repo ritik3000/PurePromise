@@ -1,5 +1,5 @@
 "use client";
-import { dark } from '@clerk/themes'
+
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "react-hot-toast";
@@ -10,12 +10,12 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    // dark mode
-    <ClerkProvider appearance={{ layout: { logoPlacement: "inside" }, baseTheme: dark }}>
+    <ClerkProvider appearance={{ layout: { logoPlacement: "inside" } }}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="system"
-        enableSystem
+        defaultTheme="light"
+        forcedTheme="light"
+        enableSystem={false}
         disableTransitionOnChange
       >
         {children}

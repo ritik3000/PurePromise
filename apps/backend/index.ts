@@ -324,23 +324,31 @@ app.get("/pack/bulk", async (req, res) => {
 });
 
 app.get("/image/bulk", authMiddleware, async (req, res) => {
-  const ids = req.query.ids as string[];
+  const ids = req.query.ids;
   const limit = (req.query.limit as string) ?? "100";
   const offset = (req.query.offset as string) ?? "0";
+  const idFilter =
+    ids && Array.isArray(ids) && ids.length > 0 ? { id: { in: ids as string[] } } : {};
 
   const imagesData = await prismaClient.outputImages.findMany({
     where: {
-      id: { in: ids },
       userId: req.userId!,
       status: {
         not: "Failed",
       },
+      ...idFilter,
     },
     orderBy: {
       createdAt: "desc",
     },
     skip: parseInt(offset),
     take: parseInt(limit),
+    select: {
+      id: true,
+      imageUrl: true,
+      status: true,
+      createdAt: true,
+    },
   });
 
   res.json({
