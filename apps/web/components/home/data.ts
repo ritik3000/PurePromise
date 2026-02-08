@@ -6,12 +6,6 @@ export const features = [
     gradient: "from-rose-500 to-pink-500",
   },
   {
-    icon: "wand",
-    title: "Magic Editing",
-    description: "Advanced AI tools to perfect every detail",
-    gradient: "from-pink-500 to-rose-400",
-  },
-  {
     icon: "users",
     title: "Couple Collections",
     description: "Create stunning couple photos for you and your partner",
@@ -23,6 +17,12 @@ export const features = [
     description: "Get your couple photos in minutes, not days",
     gradient: "from-rose-400 to-amber-400",
   },
+  {
+    icon: "wand",
+    title: "Data is safe and secure",
+    description: "Your photos and data are protected with industry-standard security",
+    gradient: "from-pink-500 to-rose-400",
+  }
 ];
 
 // Sample avatar URLs (DiceBear – unique avatar per author from name seed)
