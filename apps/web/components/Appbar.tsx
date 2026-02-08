@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "./ThemeToggle";
 import { Logo } from "./Logo";
+import { Credits } from "./navbar/Credits";
 
 export function Appbar() {
   return (
@@ -36,9 +37,10 @@ export function Appbar() {
               </Link>
             </motion.div>
 
-            {/* Auth & Pricing */}
+            {/* Auth & Credits */}
             <div className="flex items-center md:gap-4 gap-2">
               <SignedIn>
+                <Credits />
                 <Button
                   variant="ghost"
                   size="sm"

@@ -3,12 +3,13 @@
 import { BACKEND_URL } from "@/app/config";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
+import { creditUpdateEvent } from "@/hooks/use-credits";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { ImageIcon } from "lucide-react";
+import { Coins, ImageIcon } from "lucide-react";
 import { Tooltip, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import {
   Carousel,
@@ -30,6 +31,8 @@ export interface TPack {
   category?: string;
   imagesCount?: number;
   createdAt?: string;
+  /** Credit cost for this pack (from DB). 0 = free. */
+  creditCost?: number;
 }
 
 export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
@@ -57,18 +60,29 @@ export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
 
   const generatePack = async () => {
     const token = await getToken();
-    await axios.post(
-      `${BACKEND_URL}/pack/generate`,
-      {
-        packId: props.id,
-        imageUrls: props.coupleImageUrls,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      await axios.post(
+        `${BACKEND_URL}/pack/generate`,
+        {
+          packId: props.id,
+          imageUrls: props.coupleImageUrls,
         },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      creditUpdateEvent.dispatchEvent(new Event("creditUpdate"));
+    } catch (error: unknown) {
+      const status = (error as { response?: { status: number; data?: { required?: number } } })?.response?.status;
+      const data = (error as { response?: { data?: { required?: number } } })?.response?.data;
+      if (status === 402) {
+        const required = data?.required ?? 1;
+        throw new Error(`Insufficient credits (need ${required}). Add credits to continue.`);
       }
-    );
+      throw error;
+    }
   };
 
   return (
@@ -124,11 +138,19 @@ export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
                   <h3 className="font-semibold tracking-tight text-lg">
                     {props.name}
                   </h3>
-                  {props.category && (
-                    <Badge variant="secondary" className="mt-1">
-                      {props.category}
+                  <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                    {props.category && (
+                      <Badge variant="secondary">
+                        {props.category}
+                      </Badge>
+                    )}
+                    <Badge variant="outline" className="gap-1 text-muted-foreground">
+                      <Coins className="w-3 h-3" />
+                      {(props.creditCost ?? 0) === 0
+                        ? "Free"
+                        : `${props.creditCost} credits`}
                     </Badge>
-                  )}
+                  </div>
                 </div>
                 {props.imagesCount && (
                   <Badge variant="outline" className="gap-1">
@@ -149,7 +171,12 @@ export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
               )}
             </CardContent>
 
-            <CardFooter className="p-4 pt-0">
+            <CardFooter className="p-4 pt-0 flex flex-col gap-2">
+              {(props.creditCost ?? 0) > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {props.creditCost} credits will be deducted
+                </p>
+              )}
               <Button
                 className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 cursor-pointer"
                 onClick={handleGenerate}

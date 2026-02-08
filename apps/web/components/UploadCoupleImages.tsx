@@ -18,14 +18,24 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 import { X } from "lucide-react";
 
-const MAX_IMAGES = 10;
+const DEFAULT_MAX_IMAGES = 10;
 
 export function UploadCoupleImages({
   imageUrls,
   onImageUrlsChange,
+  minImages = 0,
+  maxImages = DEFAULT_MAX_IMAGES,
+  title = "Upload couple images",
+  description,
 }: {
   imageUrls: string[];
   onImageUrlsChange: (urls: string[]) => void;
+  /** Minimum required images (e.g. 5 for generate-from-images). Default 0. */
+  minImages?: number;
+  /** Maximum allowed images. Default 10. */
+  maxImages?: number;
+  title?: string;
+  description?: string;
 }) {
   const { getToken } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
@@ -34,9 +44,9 @@ export function UploadCoupleImages({
 
   const handleUpload = useCallback(
     async (files: File[]) => {
-      const toAdd = files.slice(0, MAX_IMAGES - imageUrls.length);
+      const toAdd = files.slice(0, maxImages - imageUrls.length);
       if (toAdd.length === 0) {
-        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+        toast.error(`Maximum ${maxImages} images allowed`);
         return;
       }
       setIsUploading(true);
@@ -77,7 +87,7 @@ export function UploadCoupleImages({
         setUploadPhase("idle");
       }
     },
-    [imageUrls, onImageUrlsChange, getToken]
+    [imageUrls, onImageUrlsChange, getToken, maxImages]
   );
 
   const handleDrop = useCallback(
@@ -103,9 +113,12 @@ export function UploadCoupleImages({
   return (
     <Card className="w-full rounded-lg border shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold">Upload couple images</CardTitle>
+        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          Up to {MAX_IMAGES} images. Stored individually (no zip).
+          {description ??
+            (minImages > 0
+              ? `Minimum ${minImages}, up to ${maxImages} images. Stored individually (no zip).`
+              : `Up to ${maxImages} images. Stored individually (no zip).`)}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -129,7 +142,8 @@ export function UploadCoupleImages({
           ) : (
             <>
               <p className="text-sm text-muted-foreground mb-2">
-                Drag and drop or browse ({imageUrls.length}/{MAX_IMAGES})
+                Drag and drop or browse ({imageUrls.length}/{maxImages}
+                {minImages > 0 && imageUrls.length < minImages && ` — min ${minImages}`})
               </p>
               <Button
                 variant="outline"
@@ -145,7 +159,7 @@ export function UploadCoupleImages({
                   };
                   input.click();
                 }}
-                disabled={imageUrls.length >= MAX_IMAGES}
+                disabled={imageUrls.length >= maxImages}
               >
                 Browse
               </Button>

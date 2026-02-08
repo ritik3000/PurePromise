@@ -73,12 +73,14 @@ model OutputImages {
 }
 
 model Packs {
-  id        String   @id @default(uuid())
-  name      String
-  description String @default("")
-  imageUrl1    String @default("")
-  imageUrl2    String @default("")
-  prompts   PackPrompts[]
+  id          String   @id @default(uuid())
+  name        String
+  description String   @default("")
+  imageUrl1   String   @default("")
+  imageUrl2   String   @default("")
+  /** Credit cost for generating this pack (configured per pack in DB) */
+  creditCost  Int      @default(0)
+  prompts     PackPrompts[]
 }
 
 model PackPrompts {
@@ -86,6 +88,16 @@ model PackPrompts {
   prompt    String
   packId    String
   pack      Packs    @relation(fields: [packId], references: [id])
+}
+
+model UserCredit {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  amount    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 enum ModelTypeEnum {

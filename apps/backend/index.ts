@@ -5,6 +5,7 @@ import {
   GenerateImage,
   GenerateImagesFromPack,
   GeneratePackWithImages,
+  GenerateImageFromReference,
 } from "common/types";
 import { prismaClient } from "db";
 import { S3Client } from "bun";
@@ -14,6 +15,13 @@ import { authMiddleware } from "./middleware";
 import dotenv from "dotenv";
 
 import { router as webhookRouter } from "./routes/webhook.routes";
+import {
+  getCredits,
+  deductCredits,
+  hasEnoughCredits,
+  CREDITS_TRAINING,
+  CREDITS_PER_IMAGE,
+} from "./services/credits";
 
 dotenv.config();
 
@@ -51,6 +59,21 @@ app.get("/pre-signed-url", async (req, res) => {
 });
 
 /** Presigned URLs for couple images (non-zipped, up to 10). Key: couple-images/{userId}/{uploadId}/{index}.{ext} */
+/** Get current user credits (auth required). Row is created only at user creation (webhook). */
+app.get("/credits", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId!;
+    const credits = await getCredits(userId);
+    res.json({ credits, lastUpdated: new Date().toISOString() });
+  } catch (error) {
+    console.error("Error fetching credits:", error);
+    res.status(500).json({
+      message: "Error fetching credits",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 app.post("/presigned-url/images", authMiddleware, async (req, res) => {
   const userId = req.userId!;
   const uploadId = (req.body?.uploadId as string) || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
@@ -74,6 +97,16 @@ app.post("/presigned-url/images", authMiddleware, async (req, res) => {
 
 app.post("/ai/training", authMiddleware, async (req, res) => {
   try {
+    const userId = req.userId!;
+    const enough = await hasEnoughCredits(userId, CREDITS_TRAINING);
+    if (!enough) {
+      res.status(402).json({
+        message: "Insufficient credits",
+        required: CREDITS_TRAINING,
+      });
+      return;
+    }
+
     const parsedBody = TrainModel.safeParse(req.body);
     if (!parsedBody.success) {
       res.status(411).json({
@@ -102,6 +135,13 @@ app.post("/ai/training", authMiddleware, async (req, res) => {
       },
     });
 
+    const deduct = await deductCredits(userId, CREDITS_TRAINING);
+    if (!deduct.ok) {
+      await prismaClient.model.delete({ where: { id: data.id } }).catch(() => {});
+      res.status(402).json({ message: "Insufficient credits", required: CREDITS_TRAINING });
+      return;
+    }
+
     res.json({
       modelId: data.id,
     });
@@ -114,7 +154,60 @@ app.post("/ai/training", authMiddleware, async (req, res) => {
   }
 });
 
+/** Generate single image from reference images (5–10) + prompt. 100 credits. */
+app.post("/ai/generate-from-images", authMiddleware, async (req, res) => {
+  const userId = req.userId!;
+  const enough = await hasEnoughCredits(userId, CREDITS_PER_IMAGE);
+  if (!enough) {
+    res.status(402).json({
+      message: "Insufficient credits",
+      required: CREDITS_PER_IMAGE,
+    });
+    return;
+  }
+
+  const parsed = GenerateImageFromReference.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(411).json({
+      message: "Input incorrect: need prompt and 5–10 image URLs",
+      error: parsed.error,
+    });
+    return;
+  }
+
+  const { prompt, imageUrls } = parsed.data;
+  const { request_id } = await falAiModel.generateImageFromReference(prompt, imageUrls);
+
+  const data = await prismaClient.outputImages.create({
+    data: {
+      prompt,
+      userId,
+      imageUrl: "",
+      falAiRequestId: request_id,
+    },
+  });
+
+  const deduct = await deductCredits(userId, CREDITS_PER_IMAGE);
+  if (!deduct.ok) {
+    await prismaClient.outputImages.delete({ where: { id: data.id } }).catch(() => {});
+    res.status(402).json({ message: "Insufficient credits", required: CREDITS_PER_IMAGE });
+    return;
+  }
+
+  res.json({ imageId: data.id });
+});
+
 app.post("/ai/generate", authMiddleware, async (req, res) => {
+  const userId = req.userId!;
+  const enough = await hasEnoughCredits(userId, CREDITS_PER_IMAGE);
+  if (!enough) {
+    res.status(402).json({
+      message: "Insufficient credits",
+      required: CREDITS_PER_IMAGE,
+    });
+    return;
+  }
+
   const parsedBody = GenerateImage.safeParse(req.body);
 
   if (!parsedBody.success) {
@@ -150,20 +243,50 @@ app.post("/ai/generate", authMiddleware, async (req, res) => {
     },
   });
 
+  const deduct = await deductCredits(userId, CREDITS_PER_IMAGE);
+  if (!deduct.ok) {
+    await prismaClient.outputImages.delete({ where: { id: data.id } }).catch(() => {});
+    res.status(402).json({ message: "Insufficient credits", required: CREDITS_PER_IMAGE });
+    return;
+  }
+
   res.json({
     imageId: data.id,
   });
 });
 
 app.post("/pack/generate", authMiddleware, async (req, res) => {
+  const userId = req.userId!;
   const withImages = GeneratePackWithImages.safeParse(req.body);
-  if (withImages.success) {
+
+  if (!withImages.success) {
+    res.status(411).json({
+      message: "Input incorrect",
+    });
+    return;
+  }
     const { packId, imageUrls } = withImages.data;
+    const pack = await prismaClient.packs.findUnique({
+      where: { id: packId },
+      select: { creditCost: true },
+    });
+    if (!pack) {
+      res.status(404).json({ message: "Pack not found" });
+      return;
+    }
     const prompts = await prismaClient.packPrompts.findMany({
       where: { packId },
     });
     if (prompts.length === 0) {
       res.status(411).json({ message: "Pack has no prompts" });
+      return;
+    }
+    const cost = pack.creditCost;
+    if (cost > 0 && !(await hasEnoughCredits(userId, cost))) {
+      res.status(402).json({
+        message: "Insufficient credits",
+        required: cost,
+      });
       return;
     }
     const requestIds: { request_id: string }[] = await Promise.all(
@@ -177,57 +300,20 @@ app.post("/pack/generate", authMiddleware, async (req, res) => {
         falAiRequestId: requestIds[index].request_id,
       })) as never,
     });
+    if (cost > 0) {
+      const deduct = await deductCredits(userId, cost);
+      if (!deduct.ok) {
+        await prismaClient.outputImages.deleteMany({
+          where: { id: { in: images.map((i) => i.id) } },
+        }).catch(() => {});
+        res.status(402).json({ message: "Insufficient credits", required: cost });
+        return;
+      }
+    }
     res.json({ images: images.map((i) => i.id) });
     return;
-  }
-
-  const parsedBody = GenerateImagesFromPack.safeParse(req.body);
-  if (!parsedBody.success) {
-    res.status(411).json({
-      message: "Input incorrect",
-    });
-    return;
-  }
-
-  const prompts = await prismaClient.packPrompts.findMany({
-    where: {
-      packId: parsedBody.data.packId,
-    },
   });
 
-  const model = await prismaClient.model.findFirst({
-    where: {
-      id: parsedBody.data.modelId,
-    },
-  });
-
-  if (!model) {
-    res.status(411).json({
-      message: "Model not found",
-    });
-    return;
-  }
-
-  const requestIds: { request_id: string }[] = await Promise.all(
-    prompts.map((prompt) =>
-      falAiModel.generateImage(prompt.prompt, model.tensorPath!)
-    )
-  );
-
-  const images = await prismaClient.outputImages.createManyAndReturn({
-    data: prompts.map((prompt, index) => ({
-      prompt: prompt.prompt,
-      userId: req.userId!,
-      modelId: parsedBody.data.modelId,
-      imageUrl: "",
-      falAiRequestId: requestIds[index].request_id,
-    })),
-  });
-
-  res.json({
-    images: images.map((image) => image.id),
-  });
-});
 
 app.get("/pack/bulk", async (req, res) => {
   const packs = await prismaClient.packs.findMany({});

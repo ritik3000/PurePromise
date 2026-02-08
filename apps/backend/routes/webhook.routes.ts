@@ -9,7 +9,37 @@ export const router = Router();
  * Clerk webhook endpoint
  */
 router.post("/clerk", async (req, res) => {
-  const SIGNING_SECRET = process.env.SIGNING_SECRET;
+  // #region agent log
+  fetch("http://127.0.0.1:7243/ingest/1a00abdd-af60-4b80-940b-7fc14120bf30", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      location: "webhook.routes.ts:clerk:entry",
+      message: "Clerk webhook handler entered",
+      data: { method: req.method, hasBody: !!req.body, bodyType: typeof req.body },
+      timestamp: Date.now(),
+      runId: "clerk-webhook",
+      hypothesisId: "H1-request-reaches-handler",
+    }),
+  }).catch(() => {});
+  // #endregion
+  const SIGNING_SECRET = process.env.CLERK_SIGNING_SECRET;
+  console.log("SIGNING_SECRET", SIGNING_SECRET);
+
+  // #region agent log
+  fetch("http://127.0.0.1:7243/ingest/1a00abdd-af60-4b80-940b-7fc14120bf30", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      location: "webhook.routes.ts:clerk:after-secret",
+      message: "SIGNING_SECRET check",
+      data: { hasSigningSecret: !!SIGNING_SECRET },
+      timestamp: Date.now(),
+      runId: "clerk-webhook",
+      hypothesisId: "H2-secret-missing",
+    }),
+  }).catch(() => {});
+  // #endregion
 
   if (!SIGNING_SECRET) {
     throw new Error(
@@ -19,11 +49,36 @@ router.post("/clerk", async (req, res) => {
 
   const wh = new Webhook(SIGNING_SECRET);
   const headers = req.headers;
-  const payload = req.body;
+  // Use raw body string for Svix verification (signature is over exact bytes; express.json() would change them)
+  const rawBody =
+    typeof req.body === "string"
+      ? req.body
+      : Buffer.isBuffer(req.body)
+        ? (req.body as Buffer).toString("utf8")
+        : JSON.stringify(req.body);
 
   const svix_id = headers["svix-id"];
   const svix_timestamp = headers["svix-timestamp"];
   const svix_signature = headers["svix-signature"];
+
+  // #region agent log
+  fetch("http://127.0.0.1:7243/ingest/1a00abdd-af60-4b80-940b-7fc14120bf30", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      location: "webhook.routes.ts:clerk:svix-headers",
+      message: "Svix headers check",
+      data: {
+        hasSvixId: !!svix_id,
+        hasSvixTimestamp: !!svix_timestamp,
+        hasSvixSignature: !!svix_signature,
+      },
+      timestamp: Date.now(),
+      runId: "clerk-webhook",
+      hypothesisId: "H3-headers-missing",
+    }),
+  }).catch(() => {});
+  // #endregion
 
   if (!svix_id || !svix_timestamp || !svix_signature) {
     res.status(400).json({
@@ -36,12 +91,57 @@ router.post("/clerk", async (req, res) => {
   let evt: any;
 
   try {
-    evt = wh.verify(JSON.stringify(payload), {
+    // #region agent log
+    fetch("http://127.0.0.1:7243/ingest/1a00abdd-af60-4b80-940b-7fc14120bf30", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "webhook.routes.ts:clerk:before-verify",
+        message: "Before Svix verify",
+        data: {
+          bodyType: typeof req.body,
+          rawBodyLength: rawBody.length,
+        },
+        timestamp: Date.now(),
+        runId: "clerk-webhook",
+        hypothesisId: "H4-body-format",
+      }),
+    }).catch(() => {});
+    // #endregion
+    evt = wh.verify(rawBody, {
       "svix-id": svix_id as string,
       "svix-timestamp": svix_timestamp as string,
       "svix-signature": svix_signature as string,
     });
+    // #region agent log
+    fetch("http://127.0.0.1:7243/ingest/1a00abdd-af60-4b80-940b-7fc14120bf30", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "webhook.routes.ts:clerk:verify-success",
+        message: "Svix verify succeeded",
+        data: { eventType: evt?.type },
+        timestamp: Date.now(),
+        runId: "clerk-webhook",
+        hypothesisId: "H5-verify-ok",
+      }),
+    }).catch(() => {});
+    // #endregion
   } catch (err) {
+    // #region agent log
+    fetch("http://127.0.0.1:7243/ingest/1a00abdd-af60-4b80-940b-7fc14120bf30", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "webhook.routes.ts:clerk:verify-failed",
+        message: "Svix verify failed",
+        data: { errorMessage: (err as Error).message },
+        timestamp: Date.now(),
+        runId: "clerk-webhook",
+        hypothesisId: "H4-H5-verify-fail",
+      }),
+    }).catch(() => {});
+    // #endregion
     console.log("Error: Could not verify webhook:", (err as Error).message);
     res.status(400).json({
       success: false,
@@ -71,10 +171,17 @@ router.post("/clerk", async (req, res) => {
             profilePicture: evt.data.profile_image_url,
           },
         });
+        // Ensure UserCredit record exists (id is Clerk user id, used as userId across the app)
+        await prismaClient.userCredit.upsert({
+          where: { userId: id },
+          update: {},
+          create: { userId: id, amount: 0 },
+        });
         break;
       }
 
       case "user.deleted": {
+        await prismaClient.userCredit.deleteMany({ where: { userId: id } });
         await prismaClient.user.delete({
           where: { clerkId: id },
         });
@@ -91,6 +198,20 @@ router.post("/clerk", async (req, res) => {
     return;
   }
 
+  // #region agent log
+  fetch("http://127.0.0.1:7243/ingest/1a00abdd-af60-4b80-940b-7fc14120bf30", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      location: "webhook.routes.ts:clerk:success",
+      message: "Clerk webhook completed successfully",
+      data: { eventType: evt?.type },
+      timestamp: Date.now(),
+      runId: "clerk-webhook",
+      hypothesisId: "H5-handler-success",
+    }),
+  }).catch(() => {});
+  // #endregion
   res.status(200).json({ success: true, message: "Webhook received" });
   return;
 });
