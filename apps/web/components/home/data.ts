@@ -58,7 +58,7 @@ export const carouselImages = [
     style: "Fashion",
   },
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/valentin2.jpeg",
+    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindufinal21.jpg",
     title: "Elegant Couple",
     description: "Timeless couple photos perfect for your album",
     style: "Elegant",
@@ -70,7 +70,7 @@ export const carouselImages = [
     style: "Romantic",
   },
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/WhatsApp+Image+2026-02-08+at+20.10.16.jpeg",
+    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindufinal.jpg",
     title: "Creative Couple",
     description: "Artistic couple shots with unique styling",
     style: "Creative",
