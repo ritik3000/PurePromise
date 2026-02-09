@@ -22,9 +22,9 @@ const DEFAULT_MAX_IMAGES = 10;
 
 /** Sample couple photos (clear faces) to show as upload examples */
 const SAMPLE_COUPLE_PHOTOS = [
-"https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindu1.jpeg",
-"https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindu2.jpeg",
-"https://purepromise.s3.ap-south-1.amazonaws.com/models/ak1.jpeg"
+"https://purepromise.s3.ap-south-1.amazonaws.com/models/couple1.webp",
+"https://purepromise.s3.ap-south-1.amazonaws.com/models/couple2.webp",
+"https://purepromise.s3.ap-south-1.amazonaws.com/models/couple3.webp"
 ];
 
 export function UploadCoupleImages({
@@ -184,13 +184,11 @@ export function UploadCoupleImages({
                   key={src}
                   className="relative aspect-square w-16 sm:w-20 rounded-md overflow-hidden border border-border bg-muted shrink-0"
                 >
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={src}
                     alt={`Sample couple photo ${i + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="80px"
-                    unoptimized
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 </div>
               ))}
