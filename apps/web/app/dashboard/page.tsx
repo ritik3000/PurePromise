@@ -16,13 +16,13 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-24 min-h-screen">
       <div className="space-y-8">
-        <Tabs defaultValue="camera">
+        <Tabs defaultValue="packs">
           <TabsList className="inline-flex h-10 items-center justify-start rounded-lg p-1 dark:bg-muted/50 bg-pink-50">
             <TabsTrigger
-              value="camera"
+              value="packs"
               className="data-[state=active]:bg-pink-500/70 backdrop-blur-sm data-[state=active]:text-pink-50 cursor-pointer px-3 py-1.5"
             >
-              My Images
+              Packs
             </TabsTrigger>
             <TabsTrigger
               value="generate"
@@ -31,19 +31,19 @@ export default async function DashboardPage() {
               Generate<span className="md:block hidden pl-1">Images</span>
             </TabsTrigger>
             <TabsTrigger
-              value="packs"
+              value="camera"
               className="data-[state=active]:bg-pink-500/70 backdrop-blur-sm data-[state=active]:text-pink-50 cursor-pointer px-3 py-1.5"
             >
-              Packs
+              My Images
             </TabsTrigger>
           </TabsList>
 
           <div className="mt-8 bg-card rounded-lg">
             <TabsContent
-              value="camera"
+              value="packs"
               className="mt-0 focus-visible:outline-none"
             >
-              <Camera />
+              <Packs />
             </TabsContent>
             <TabsContent
               value="generate"
@@ -52,10 +52,10 @@ export default async function DashboardPage() {
               <GenerateImage />
             </TabsContent>
             <TabsContent
-              value="packs"
+              value="camera"
               className="mt-0 focus-visible:outline-none"
             >
-              <Packs />
+              <Camera />
             </TabsContent>
           </div>
         </Tabs>
