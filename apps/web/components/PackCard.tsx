@@ -52,7 +52,7 @@ export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
         loading: "Starting pack generation...",
         success: "Generation started! Images will be available in about 10 minutes on the My Images page.",
         error: "Failed to start generation",
-      });
+      }, { success: { duration: 5000 } });
     } catch (error) {
       console.error("Failed to generate pack:", error);
     }

@@ -68,7 +68,7 @@ export function GenerateImage() {
           }
           return "Failed to start generation";
         },
-      });
+      }, { success: { duration: 5000 } });
     } catch {
       // Error already shown by toast.promise
     } finally {
