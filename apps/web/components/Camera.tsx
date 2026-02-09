@@ -3,13 +3,19 @@
 import { useAuth } from "@clerk/nextjs";
 import { BACKEND_URL } from "@/app/config";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImageCard } from "./ImageCard";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { Download, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
+import {
+  PostGenerationFeedbackModal,
+  POST_GENERATION_FEEDBACK_KEY,
+} from "./PostGenerationFeedbackModal";
 
 export interface TImage {
   id: string;
@@ -24,6 +30,9 @@ export function Camera() {
   const [selectedImage, setSelectedImage] = useState<TImage | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevImagesRef = useRef<TImage[]>([]);
   const { getToken } = useAuth();
 
   const formatDate = (dateString: string) => {
@@ -42,7 +51,49 @@ export function Camera() {
       const response = await axios.get(`${BACKEND_URL}/image/bulk`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setImages(response.data.images);
+      const newImages: TImage[] = response.data.images ?? [];
+      const prev = prevImagesRef.current;
+      const pendingIds = new Set(
+        prev.filter((img) => img.status === "Pending").map((img) => img.id)
+      );
+      const newlyGenerated = newImages.filter(
+        (img) => img.status === "Generated" && pendingIds.has(img.id)
+      );
+      prevImagesRef.current = newImages;
+      setImages(newImages);
+
+      if (newlyGenerated.length === 1) {
+        toast.success("Image is generated check my images tab");
+      } else if (newlyGenerated.length > 1) {
+        toast.success(`${newlyGenerated.length} images are generated check my images tab`);
+      }
+      if (newlyGenerated.length > 0 && !feedbackTimeoutRef.current) {
+        feedbackTimeoutRef.current = setTimeout(async () => {
+          try {
+            const token = await getToken();
+            if (token) {
+              const res = await fetch(
+                `${BACKEND_URL}/feedback/post-generation-given`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+              if (res.ok) {
+                const data = (await res.json()) as { given?: boolean };
+                if (data.given) {
+                  feedbackTimeoutRef.current = null;
+                  return;
+                }
+              }
+            }
+          } catch {
+            // fallback to localStorage if backend fails
+          }
+          const alreadyGiven =
+            typeof window !== "undefined" &&
+            localStorage.getItem(POST_GENERATION_FEEDBACK_KEY) === "true";
+          if (!alreadyGiven) setShowFeedbackModal(true);
+          feedbackTimeoutRef.current = null;
+        }, 20_000);
+      }
       setImagesLoading(false);
     } catch (error) {
       console.error("Failed to fetch images:", error);
@@ -52,6 +103,20 @@ export function Camera() {
 
   useEffect(() => {
     fetchImages();
+  }, []);
+
+  const hasPendingImages = images.some((img) => img.status === "Pending");
+
+  useEffect(() => {
+    if (!hasPendingImages) return;
+    const interval = setInterval(fetchImages, 5_000);
+    return () => clearInterval(interval);
+  }, [hasPendingImages]);
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
+    };
   }, []);
 
   const handleImageClick = (image: TImage, index: number) => {
@@ -114,15 +179,18 @@ export function Camera() {
             ))
           : images.map((image, index) => (
               <div
-                key={image.id +index}
-                className="cursor-pointer transition-transform mb-4 hover:scale-[1.02]"
-                onClick={() => handleImageClick(image, index)}
+                key={`${image.id}-${image.status}`}
+                className={cn(
+                  "transition-transform mb-4",
+                  image.status === "Generated" && "cursor-pointer hover:scale-[1.02]"
+                )}
+                onClick={() => image.status === "Generated" && handleImageClick(image, index)}
               >
                 <ImageCard
                   id={image.id}
                   status={image.status}
                   imageUrl={image.imageUrl}
-                  onClick={() => handleImageClick(image, index)}
+                  onClick={() => image.status === "Generated" && handleImageClick(image, index)}
                   createdAt={image.createdAt}
                 />
               </div>
@@ -214,6 +282,11 @@ export function Camera() {
           </DialogContent>
         </Dialog>
       )}
+
+      <PostGenerationFeedbackModal
+        open={showFeedbackModal}
+        onOpenChange={setShowFeedbackModal}
+      />
     </div>
   );
 }

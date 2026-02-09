@@ -131,6 +131,8 @@ model Feedback {
   phone     String?
   message   String
   userId    String?
+  rating    Int?     // 1-5, used for post-generation feedback
+  source    String?  // e.g. "post_generation" vs contact form
   createdAt DateTime @default(now())
 
   @@index([createdAt])

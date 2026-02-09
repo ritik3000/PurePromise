@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import CustomLabel from "./ui/customLabel";
 import { creditUpdateEvent } from "@/hooks/use-credits";
+import { useDashboardTab } from "@/app/dashboard/DashboardTabsWrapper";
 
 const MIN_IMAGES = 3;
 const MAX_IMAGES = 10;
@@ -37,6 +38,7 @@ export function GenerateImage() {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const { getToken } = useAuth();
+  const { switchToMyImages } = useDashboardTab() ?? {};
 
   const canGenerate = prompt.trim().length > 0 && imageUrls.length >= MIN_IMAGES && imageUrls.length <= MAX_IMAGES;
 
@@ -69,6 +71,7 @@ export function GenerateImage() {
           return "Failed to start generation";
         },
       }, { success: { duration: 5000 } });
+      switchToMyImages?.();
     } catch {
       // Error already shown by toast.promise
     } finally {

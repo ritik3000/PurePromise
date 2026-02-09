@@ -590,12 +590,21 @@ app.get("/model/status/:modelId", authMiddleware, async (req, res) => {
   }
 });
 
-/** Submit feedback (contact form). Public; optional auth links feedback to user. */
+const POST_GENERATION_SOURCE = "post_generation";
+
+/** Submit feedback (contact form or post-generation). Public; optional auth links feedback to user. */
 app.post("/feedback", async (req, res) => {
   try {
     const email = typeof req.body?.email === "string" ? req.body.email.trim() : "";
     const phone = typeof req.body?.phone === "string" ? req.body.phone.trim() || null : null;
     const message = typeof req.body?.message === "string" ? req.body.message.trim() : "";
+    const source = typeof req.body?.source === "string" ? req.body.source.trim() || null : null;
+    const ratingRaw = req.body?.rating;
+    const rating =
+      typeof ratingRaw === "number" && Number.isInteger(ratingRaw) && ratingRaw >= 1 && ratingRaw <= 5
+        ? ratingRaw
+        : null;
+
     if (!email || !message) {
       res.status(400).json({ message: "Email and message are required" });
       return;
@@ -611,6 +620,10 @@ app.post("/feedback", async (req, res) => {
     }
     if (message.length > 5000) {
       res.status(400).json({ message: "Message must be at most 5000 characters" });
+      return;
+    }
+    if (source === POST_GENERATION_SOURCE && rating == null) {
+      res.status(400).json({ message: "Rating is required for post-generation feedback" });
       return;
     }
 
@@ -635,13 +648,33 @@ app.post("/feedback", async (req, res) => {
     }
 
     const feedback = await prismaClient.feedback.create({
-      data: { email, phone, message, userId },
+      data: { email, phone, message, userId, rating, source },
     });
     res.status(201).json({ id: feedback.id, message: "Thank you for your feedback." });
   } catch (error) {
     console.error("Error submitting feedback:", error);
     res.status(500).json({
       message: "Error submitting feedback",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+/** Check if the authenticated user has already given post-generation feedback. */
+app.get("/feedback/post-generation-given", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId!;
+    const existing = await prismaClient.feedback.findFirst({
+      where: {
+        userId,
+        source: POST_GENERATION_SOURCE,
+      },
+    });
+    res.json({ given: !!existing });
+  } catch (error) {
+    console.error("Error checking post-generation feedback:", error);
+    res.status(500).json({
+      message: "Failed to check feedback status",
       details: error instanceof Error ? error.message : "Unknown error",
     });
   }

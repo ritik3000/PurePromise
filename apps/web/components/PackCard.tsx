@@ -11,6 +11,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Coins, ImageIcon } from "lucide-react";
 import { Tooltip, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { useDashboardTab } from "@/app/dashboard/DashboardTabsWrapper";
 import {
   Carousel,
   CarouselContent,
@@ -37,6 +38,7 @@ export interface TPack {
 
 export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
   const { getToken } = useAuth();
+  const { switchToMyImages } = useDashboardTab() ?? {};
   const canGenerate = props.coupleImageUrls.length >= 3 && props.coupleImageUrls.length <= 10;
 
   const images = [
@@ -48,11 +50,12 @@ export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
 
   const handleGenerate = async () => {
     try {
-      toast.promise(generatePack(), {
+      await toast.promise(generatePack(), {
         loading: "Starting pack generation...",
         success: "Generation started! Images will be available in about 10 minutes on the My Images page.",
         error: "Failed to start generation",
       }, { success: { duration: 5000 } });
+      switchToMyImages?.();
     } catch (error) {
       console.error("Failed to generate pack:", error);
     }

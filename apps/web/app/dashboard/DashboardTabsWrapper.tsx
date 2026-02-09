@@ -21,7 +21,7 @@ export function DashboardTabsWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const [activeTab, setActiveTab] = useState("packs");
+  const [activeTab, setActiveTab] = useState(MY_IMAGES_TAB);
 
   const switchToMyImages = () => setActiveTab(MY_IMAGES_TAB);
 

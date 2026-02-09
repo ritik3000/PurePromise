@@ -1,9 +1,10 @@
 import { GenerateImage } from "@/components/GenerateImage";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Packs } from "@/components/Packs";
 import { Camera } from "@/components/Camera";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
+import { DashboardTabsWrapper } from "./DashboardTabsWrapper";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
@@ -16,7 +17,7 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-24 min-h-screen">
       <div className="space-y-8">
-        <Tabs defaultValue="packs">
+        <DashboardTabsWrapper>
           <TabsList className="inline-flex h-10 items-center justify-start rounded-lg p-1 dark:bg-muted/50 bg-pink-50">
             <TabsTrigger
               value="packs"
@@ -58,7 +59,7 @@ export default async function DashboardPage() {
               <Camera />
             </TabsContent>
           </div>
-        </Tabs>
+        </DashboardTabsWrapper>
       </div>
     </div>
   );
