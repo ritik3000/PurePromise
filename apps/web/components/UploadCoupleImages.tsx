@@ -135,9 +135,7 @@ export function UploadCoupleImages({
           {isUploading ? (
             <div className="w-full max-w-xs space-y-2 text-center">
               <Progress value={uploadPhase === "uploading" ? uploadProgress : 10} className="h-2 w-full" />
-              <p className="text-xs text-muted-foreground">
-                {uploadPhase === "fetching-urls" ? "Fetching upload URLs..." : "Uploading..."}
-              </p>
+              <p className="text-xs text-muted-foreground">Uploading...</p>
             </div>
           ) : (
             <>
