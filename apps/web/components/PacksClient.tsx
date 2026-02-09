@@ -29,10 +29,10 @@ export function PacksClient({ packs }: { packs: TPack[] }) {
             <UploadCoupleImages
               imageUrls={coupleImageUrls}
               onImageUrlsChange={setCoupleImageUrls}
-              minImages={5}
+              minImages={3}
               maxImages={10}
               title="Upload couple images"
-              description="Upload 5–10 couple images. Stored individually (no zip)."
+              description="Upload 3–10 couple images. Stored individually (no zip)."
             />
           </div>
         </motion.div>

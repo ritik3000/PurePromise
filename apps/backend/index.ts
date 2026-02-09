@@ -174,7 +174,7 @@ app.post("/ai/training", authMiddleware, async (req, res) => {
   }
 });
 
-/** Generate single image from reference images (5–10) + prompt. 25 credits. */
+/** Generate single image from reference images (3–10) + prompt. 25 credits. */
 app.post("/ai/generate-from-images", authMiddleware, async (req, res) => {
   const userId = req.userId!;
   const enough = await hasEnoughCredits(userId, CREDITS_PER_IMAGE);
@@ -189,7 +189,7 @@ app.post("/ai/generate-from-images", authMiddleware, async (req, res) => {
   const parsed = GenerateImageFromReference.safeParse(req.body);
   if (!parsed.success) {
     res.status(411).json({
-      message: "Input incorrect: need prompt and 5–10 image URLs",
+      message: "Input incorrect: need prompt and 3–10 image URLs",
       error: parsed.error,
     });
     return;

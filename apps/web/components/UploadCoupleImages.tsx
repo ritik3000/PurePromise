@@ -20,6 +20,13 @@ import { X } from "lucide-react";
 
 const DEFAULT_MAX_IMAGES = 10;
 
+/** Sample couple photos (clear faces) to show as upload examples */
+const SAMPLE_COUPLE_PHOTOS = [
+"https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindu1.jpeg",
+"https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindu2.jpeg",
+"https://purepromise.s3.ap-south-1.amazonaws.com/models/ak1.jpeg"
+];
+
 export function UploadCoupleImages({
   imageUrls,
   onImageUrlsChange,
@@ -27,15 +34,24 @@ export function UploadCoupleImages({
   maxImages = DEFAULT_MAX_IMAGES,
   title = "Upload couple images",
   description,
+  hint,
+  showFaceNotice = true,
+  samplePhotoSets,
 }: {
   imageUrls: string[];
   onImageUrlsChange: (urls: string[]) => void;
-  /** Minimum required images (e.g. 5 for generate-from-images). Default 0. */
+  /** Minimum required images (e.g. 3 for generate-from-images). Default 0. */
   minImages?: number;
   /** Maximum allowed images. Default 10. */
   maxImages?: number;
   title?: string;
   description?: string;
+  /** Optional extra line (e.g. for generate-images: include-all-faces tip). */
+  hint?: string;
+  /** Show the red "couple faces only" notice. Default true (packs); set false for generate-images tab. */
+  showFaceNotice?: boolean;
+  /** Custom sample sets with labels (e.g. "1 face", "2 faces", "3 faces"). When set, replaces the default couple samples. */
+  samplePhotoSets?: { label: string; urls: string[] }[];
 }) {
   const { getToken } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
@@ -120,8 +136,67 @@ export function UploadCoupleImages({
               ? `Minimum ${minImages}, up to ${maxImages} images. Stored individually (no zip).`
               : `Up to ${maxImages} images. Stored individually (no zip).`)}
         </CardDescription>
+        {showFaceNotice && (
+          <p className="text-sm text-red-600 dark:text-red-500 mt-1.5 font-medium">
+            Only upload photos in which faces of the couple are clearly visible. No other faces should be visible.
+          </p>
+        )}
+        {hint && (
+          <p className="text-sm text-red-600 dark:text-red-500 mt-1.5 font-bold">{hint}</p>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-muted-foreground">
+            {samplePhotoSets ? "Reference: upload photos like these for each case" : "Sample photos (good examples)"}
+          </p>
+          {samplePhotoSets ? (
+            <div className="space-y-2">
+              {samplePhotoSets.map((set, setIdx) => (
+                <div key={setIdx} className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-medium text-muted-foreground shrink-0 w-24 sm:w-28">
+                    {set.label}:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {set.urls.map((src, i) => (
+                      <div
+                        key={src}
+                        className="relative aspect-square w-14 sm:w-16 rounded-md overflow-hidden border border-border bg-muted shrink-0"
+                      >
+                        <Image
+                          src={src}
+                          alt={`${set.label} sample ${i + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                          unoptimized
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {SAMPLE_COUPLE_PHOTOS.map((src, i) => (
+                <div
+                  key={src}
+                  className="relative aspect-square w-16 sm:w-20 rounded-md overflow-hidden border border-border bg-muted shrink-0"
+                >
+                  <Image
+                    src={src}
+                    alt={`Sample couple photo ${i + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="80px"
+                    unoptimized
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <div
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -165,7 +240,7 @@ export function UploadCoupleImages({
         </div>
         {minImages > 0 && (
           <p className="text-xs text-muted-foreground">
-            * minimum of {minImages} images requried
+            * minimum of {minImages} images required
 
           </p>
         )}

@@ -37,7 +37,7 @@ export interface TPack {
 
 export function PackCard(props: TPack & { coupleImageUrls: string[] }) {
   const { getToken } = useAuth();
-  const canGenerate = props.coupleImageUrls.length >= 5 && props.coupleImageUrls.length <= 10;
+  const canGenerate = props.coupleImageUrls.length >= 3 && props.coupleImageUrls.length <= 10;
 
   const images = [
     props.imageUrl1,

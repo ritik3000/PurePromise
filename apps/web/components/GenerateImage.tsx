@@ -13,8 +13,24 @@ import { Sparkles } from "lucide-react";
 import CustomLabel from "./ui/customLabel";
 import { creditUpdateEvent } from "@/hooks/use-credits";
 
-const MIN_IMAGES = 5;
+const MIN_IMAGES = 3;
 const MAX_IMAGES = 10;
+
+/** Reference sample sets for Generate images: 1 face, 2 faces, 3 faces */
+const REFERENCE_SAMPLE_SETS = [
+  {
+    label: "1 face – upload photos with 1 face",
+    urls: ["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80"],
+  },
+  {
+    label: "2 faces – upload photos with 2 faces",
+    urls: ["https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=200&q=80"],
+  },
+  {
+    label: "3 faces – upload photos with 3 faces",
+    urls: ["https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=200&q=80"],
+  },
+];
 
 export function GenerateImage() {
   const [prompt, setPrompt] = useState("");
@@ -74,7 +90,10 @@ export function GenerateImage() {
           minImages={MIN_IMAGES}
           maxImages={MAX_IMAGES}
           title="Upload reference images"
-          description={`Upload 5–10 reference images. Stored individually (no zip).`}
+          description={`Upload 3–10 reference images. Stored individually (no zip).`}
+          hint="Make sure every photo includes all intended faces, and upload multiple images for the best outcome."
+          showFaceNotice={false}
+          samplePhotoSets={REFERENCE_SAMPLE_SETS}
         />
 
         <motion.div
