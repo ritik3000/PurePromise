@@ -24,16 +24,24 @@ export function HeroHeader() {
           className="px-4 py-2 rounded-full dark:bg-rose-500/10 dark:text-rose-200 text-sm font-medium flex items-center gap-2 border dark:border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-300 border-rose-300 dark:border-rose-500/30"
         >
           <Sparkles className="w-4 h-4" />
-          AI Pre-Wedding Photo Generation
+          AI Couple Photo Generation
         </motion.span>
       </div>
 
       <h1 className="text-4xl sm:text-5xl md:text-6xl text-primary lg:text-7xl font-bold tracking-tight max-w-4xl mx-auto leading-tight">
-        Your Love Story, Reimagined by {" "}
+      Your Love Story, Reimagined by {" "}
         <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">
-          AI Magic
+        AI
         </span>
+        .
       </h1>
+
+      <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+        Choose a romantic scene. Get stunning couple portraits in seconds.
+      </p>
+      <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto">
+        Your photos are completely private.
+      </p>
 
       <div className="flex items-center justify-center gap-4">
         <SignedOut>
@@ -43,7 +51,7 @@ export function HeroHeader() {
           >
             <SignInButton mode="modal">
               <span className="flex items-center">
-                Start Creating Now
+                Create Your Valentine Photo ❤️
                 <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
               </span>
             </SignInButton>

@@ -37,6 +37,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import JSZip from "jszip";
+import { creditUpdateEvent } from "@/hooks/use-credits";
 
 interface UploadedFile {
   name: string;
@@ -142,6 +143,7 @@ export function Train() {
 
       if (response.data.modelId) {
         setModelId(response.data.modelId);
+        creditUpdateEvent.dispatchEvent(new Event("creditUpdate"));
         toast.success(
           "Model training started! This will take approximately 20 minutes."
         );
@@ -149,12 +151,16 @@ export function Train() {
         toast.error("Failed to start model training");
         setModelTraining(false);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Training error:", error);
-      toast.error(
-        (error as any).response?.data?.message ||
-          "Failed to start model training"
-      );
+      const status = (error as { response?: { status: number; data?: { message?: string; required?: number } } })?.response?.status;
+      const data = (error as { response?: { data?: { message?: string; required?: number } } })?.response?.data;
+      if (status === 402) {
+        const required = data?.required ?? 10;
+        toast.error(`Insufficient credits (need ${required}). Add credits to continue.`);
+      } else {
+        toast.error(data?.message ?? "Failed to start model training");
+      }
       setModelTraining(false);
     }
   }

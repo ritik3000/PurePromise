@@ -16,9 +16,13 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "PurePromise - AI Pre-Wedding Photos",
+  title: "PurePromise - AI Couple Photos",
   description:
-    "Create stunning pre-wedding photos of couples with AI-powered technology. Transform your love story into beautiful memories.",
+    "Create stunning couple photos with AI. Upload a photo, choose a romantic scene, and get beautiful couple portraits in seconds.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased`}
       >

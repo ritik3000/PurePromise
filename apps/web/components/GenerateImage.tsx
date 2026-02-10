@@ -6,40 +6,74 @@ import { Button } from "./ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { BACKEND_URL } from "@/app/config";
-import { SelectModel } from "./Models";
+import { UploadCoupleImages } from "./UploadCoupleImages";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import CustomLabel from "./ui/customLabel";
-import { GlowEffect } from "./GlowEffect";
+import { creditUpdateEvent } from "@/hooks/use-credits";
+import { useDashboardTab } from "@/app/dashboard/DashboardTabsWrapper";
+
+const MIN_IMAGES = 3;
+const MAX_IMAGES = 10;
+
+/** Reference sample sets for Generate images: 1 face, 2 faces, 3 faces */
+const REFERENCE_SAMPLE_SETS = [
+  {
+    label: "1 face – upload photos with 1 face",
+    urls: ["https://purepromise.s3.ap-south-1.amazonaws.com/models/single1.jpg"],
+  },
+  {
+    label: "2 faces – upload photos with 2 faces",
+    urls: ["https://purepromise.s3.ap-south-1.amazonaws.com/models/single2.avif"],
+  },
+  {
+    label: "3 faces – upload photos with 3 faces",
+    urls: ["https://purepromise.s3.ap-south-1.amazonaws.com/models/single3.jpg"],
+  },
+];
 
 export function GenerateImage() {
   const [prompt, setPrompt] = useState("");
-  const [selectedModel, setSelectedModel] = useState<string>();
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const { getToken } = useAuth();
+  const { switchToMyImages } = useDashboardTab() ?? {};
+
+  const canGenerate = prompt.trim().length > 0 && imageUrls.length >= MIN_IMAGES && imageUrls.length <= MAX_IMAGES;
+
+  const generateImage = async () => {
+    const token = await getToken();
+    await axios.post(
+      `${BACKEND_URL}/ai/generate-from-images`,
+      { prompt: prompt.trim(), imageUrls },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    creditUpdateEvent.dispatchEvent(new Event("creditUpdate"));
+    setPrompt("");
+  };
 
   const handleGenerate = async () => {
-    if (!prompt || !selectedModel) return;
+    if (!canGenerate) return;
 
     setIsGenerating(true);
     try {
-      const token = await getToken();
-      await axios.post(
-        `${BACKEND_URL}/ai/generate`,
-        {
-          prompt,
-          modelId: selectedModel,
-          num: 1,
+      await toast.promise(generateImage(), {
+        loading: "Starting image generation...",
+        success: "Generation started! Images will be available in about 10 minutes on the My Images page.",
+        error: (err: unknown) => {
+          const status = (err as { response?: { status: number; data?: { required?: number } } })?.response?.status;
+          const data = (err as { response?: { data?: { required?: number } } })?.response?.data;
+          if (status === 402) {
+            const required = data?.required ?? 100;
+            return `Insufficient credits (need ${required}). Add credits to continue.`;
+          }
+          return "Failed to start generation";
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      toast.success("Image generation started!");
-      setPrompt("");
-    } catch (error) {
-      toast.error("Failed to generate image");
+      }, { success: { duration: 5000 } });
+      switchToMyImages?.();
+    } catch {
+      // Error already shown by toast.promise
     } finally {
       setIsGenerating(false);
     }
@@ -53,9 +87,16 @@ export function GenerateImage() {
       transition={{ duration: 0.5 }}
     >
       <div className="space-y-4">
-        <SelectModel
-          selectedModel={selectedModel}
-          setSelectedModel={setSelectedModel}
+        <UploadCoupleImages
+          imageUrls={imageUrls}
+          onImageUrlsChange={setImageUrls}
+          minImages={MIN_IMAGES}
+          maxImages={MAX_IMAGES}
+          title="Upload reference images"
+          description={`Upload 3–10 reference images. Stored individually (no zip).`}
+          hint="Make sure every photo includes all intended faces, and upload multiple images for the best outcome."
+          showFaceNotice={false}
+          samplePhotoSets={REFERENCE_SAMPLE_SETS}
         />
 
         <motion.div
@@ -67,30 +108,22 @@ export function GenerateImage() {
           <CustomLabel label="Enter your prompt here..." />
           <Textarea
             className="w-full min-h-24"
+            value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
         </motion.div>
 
-        <div className="flex justify-end pt-4">
-          <div className="relative">
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating || !prompt || !selectedModel}
-              variant={"outline"}
-              className="relative z-20 cursor-pointer"
-            >
-              Generate Image <Sparkles size={24} />
-            </Button>
-            {(prompt && selectedModel) && (
-              <GlowEffect
-                colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
-                mode="colorShift"
-                blur="soft"
-                duration={3}
-                scale={0.9}
-              />
-            )}
-          </div>
+        <div className="flex flex-col items-end gap-2 pt-4">
+          <p className="text-sm text-muted-foreground">
+            25 credits will be deducted per image
+          </p>
+          <Button
+            onClick={handleGenerate}
+            disabled={isGenerating || !canGenerate}
+            className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            Generate Image <Sparkles size={24} />
+          </Button>
         </div>
       </div>
     </motion.div>

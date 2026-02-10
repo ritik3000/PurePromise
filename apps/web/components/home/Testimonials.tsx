@@ -16,7 +16,7 @@ export function Testimonials() {
         Loved by Couples
       </h2>
       <p className="text-muted-foreground text-center mb-12 text-lg">
-        Join group of satisfied couples who have created beautiful pre-wedding memories
+        Join couples who have created beautiful memories with our AI
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {testimonials.map((testimonial, index) => (

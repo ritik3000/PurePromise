@@ -58,26 +58,29 @@ enum OutputImageStatusEnum {
 }
 
 model OutputImages {
-  id        String  @id   @default(uuid())
-  imageUrl  String  @default("")
-  modelId   String
-  userId    String
-  prompt    String
-  falAiRequestId    String?
-  status    OutputImageStatusEnum   @default(Pending)
-  model     Model   @relation(fields: [modelId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String               @id   @default(uuid())
+  imageUrl       String               @default("")
+  modelId        String?
+  userId         String
+  prompt         String
+  falAiRequestId String?
+  status         OutputImageStatusEnum @default(Pending)
+  model          Model?               @relation(fields: [modelId], references: [id])
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
   @@index([falAiRequestId])
+  @@index([modelId])
 }
 
 model Packs {
-  id        String   @id @default(uuid())
-  name      String
-  description String @default("")
-  imageUrl1    String @default("")
-  imageUrl2    String @default("")
-  prompts   PackPrompts[]
+  id          String   @id @default(uuid())
+  name        String
+  description String   @default("")
+  imageUrl1   String   @default("")
+  imageUrl2   String   @default("")
+  /** Credit cost for generating this pack (configured per pack in DB) */
+  creditCost  Int      @default(0)
+  prompts     PackPrompts[]
 }
 
 model PackPrompts {
@@ -85,6 +88,16 @@ model PackPrompts {
   prompt    String
   packId    String
   pack      Packs    @relation(fields: [packId], references: [id])
+}
+
+model UserCredit {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  amount    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 enum ModelTypeEnum {
@@ -110,4 +123,27 @@ enum EyeColorEnum {
   Blue
   Hazel
   Gray
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  email     String
+  phone     String?
+  message   String
+  userId    String?
+  rating    Int?     // 1-5, used for post-generation feedback
+  source    String?  // e.g. "post_generation" vs contact form
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model CreditRequest {
+  id        String   @id @default(uuid())
+  userId    String
+  phone     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }

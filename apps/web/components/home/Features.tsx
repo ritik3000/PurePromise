@@ -1,32 +1,32 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Camera, Wand2, Users, Clock } from "lucide-react";
+import { Camera, Shield, Users, Clock } from "lucide-react";
 
 const features = [
   {
     icon: <Camera className="w-6 h-6" />,
-    title: "Wedding-Ready Quality",
-    description: "Professional pre-wedding couple photos generated in seconds",
+    title: "Studio Quality",
+    description: "Professional couple photos generated in seconds",
     gradient: "from-rose-500 to-pink-500",
-  },
-  {
-    icon: <Wand2 className="w-6 h-6" />,
-    title: "Magic Editing",
-    description: "Advanced AI tools to perfect every detail",
-    gradient: "from-pink-500 to-rose-400",
   },
   {
     icon: <Users className="w-6 h-6" />,
     title: "Couple Collections",
-    description: "Create stunning pre-wedding photos for couples",
+    description: "Create stunning couple photos for you and your partner",
     gradient: "from-amber-500 to-rose-500",
   },
   {
     icon: <Clock className="w-6 h-6" />,
     title: "Instant Delivery",
-    description: "Get your pre-wedding photos in minutes, not days",
+    description: "Get your couple photos in minutes, not days",
     gradient: "from-rose-400 to-amber-400",
+  },
+  {
+    icon: <Shield className="w-6 h-6" />,
+    title: "Data is safe and secure",
+    description: "Your photos and data are protected with industry-standard security",
+    gradient: "from-pink-500 to-rose-400",
   },
 ];
 

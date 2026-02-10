@@ -1,28 +1,28 @@
 export const features = [
   {
     icon: "camera",
-    title: "Wedding-Ready Quality",
-    description: "Professional pre-wedding photos generated in seconds",
+    title: "Studio Quality",
+    description: "Professional couple photos generated in seconds",
     gradient: "from-rose-500 to-pink-500",
-  },
-  {
-    icon: "wand",
-    title: "Magic Editing",
-    description: "Advanced AI tools to perfect every detail",
-    gradient: "from-pink-500 to-rose-400",
   },
   {
     icon: "users",
     title: "Couple Collections",
-    description: "Create stunning pre-wedding photos for couples",
+    description: "Create stunning couple photos for you and your partner",
     gradient: "from-amber-500 to-rose-500",
   },
   {
     icon: "clock",
     title: "Instant Delivery",
-    description: "Get your pre-wedding photos in minutes, not days",
+    description: "Get your couple photos in minutes, not days",
     gradient: "from-rose-400 to-amber-400",
   },
+  {
+    icon: "wand",
+    title: "Data is safe and secure",
+    description: "Your photos and data are protected with industry-standard security",
+    gradient: "from-pink-500 to-rose-400",
+  }
 ];
 
 // Sample avatar URLs (DiceBear – unique avatar per author from name seed)
@@ -31,19 +31,19 @@ const avatarUrl = (name: string) =>
 
 export const testimonials = [
   {
-    text: "I wanted something elegant, not overdone. The photos felt very real and respectful of our traditions. It was a lovely experience.",
+    text: "Beautiful memories created so effortlessly, we truly loved every single photo. The whole experience felt very special and meaningful for us.",
     author: "Indu Bhatt",
     role: "Teacher",
     avatar: avatarUrl("Indu Bhatt"),
   },
   {
-    text: "The best part was how easy the whole process was. Selecting outfits, poses, and then getting a complete video at the end made it totally worth it.",
-    author: "Ankit ",
+    text: "Everything looked so real and elegant, and the process was unbelievably easy to use. It felt like our moments were captured perfectly without any stress.",
+    author: "Ankit",
     role: "Sales Manager",
     avatar: avatarUrl("Nisha Agrawal"),
   },
   {
-    text: "We donʼt usually spend too much on photoshoots, but this was very reasonable and the output was better than expected. The locations and poses felt authentic.",
+    text: "This is honestly the easiest way to create beautiful memories as a couple. The results felt natural, warm, and something we would love to keep forever.",
     author: "Rahul Verma",
     role: "Software Engineer",
     avatar: avatarUrl("Rahul Verma"),
@@ -52,29 +52,29 @@ export const testimonials = [
 
 export const carouselImages = [
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/ritikurvashi7.jpg",
+    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/valentine1.jpeg",
     title: "Fashion Forward",
-    description: "Stylish pre-wedding photography for modern couples",
+    description: "Stylish couple photography for modern pairs",
     style: "Fashion",
   },
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/ritikurvashi17.jpg",
-    title: "Elegant Pre-Wedding",
-    description: "Timeless couple photos perfect for your wedding album",
+    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindufinal21.jpg",
+    title: "Elegant Couple",
+    description: "Timeless couple photos perfect for your album",
     style: "Elegant",
   },
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindufinal.jpg",
-    title: "Romantic Lifestyle",
-    description: "Natural and intimate pre-wedding moments",
-    style: "Romantic",
-  },
-  {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/rufinal1.jpg",
+    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/europe3.jpeg",
     title: "Creative Couple",
-    description: "Artistic pre-wedding shots with unique styling",
+    description: "Artistic couple shots with unique styling",
     style: "Creative",
   },
+  {
+    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/valentine3.jpeg",
+    title: "Romantic Lifestyle",
+    description: "Natural and intimate couple moments",
+    style: "Romantic",
+  }
 ];
 
 export const brands = [
@@ -88,7 +88,7 @@ export const brands = [
 ];
 
 export const stats = [
-  { value: "50+", label: "Pre-Wedding Photos Generated" },
+  { value: "50+", label: "Couple Photos Generated" },
   { value: "8+", label: "Happy Couples" },
   { value: "80%", label: "Satisfaction Rate" },
   { value: "24/7", label: "AI Support" },

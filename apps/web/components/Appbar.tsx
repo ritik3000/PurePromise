@@ -4,8 +4,8 @@ import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ThemeToggle } from "./ThemeToggle";
 import { Logo } from "./Logo";
+import { Credits } from "./navbar/Credits";
 
 export function Appbar() {
   return (
@@ -36,17 +36,18 @@ export function Appbar() {
               </Link>
             </motion.div>
 
-            {/* Auth & Pricing */}
+            {/* Nav & Auth */}
             <div className="flex items-center md:gap-4 gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition"
+                asChild
+              >
+                <Link href="/contact">Contact Us</Link>
+              </Button>
               <SignedIn>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition"
-                  asChild
-                >
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
+                <Credits />
                 <UserButton
                   afterSignOutUrl="/"
                   appearance={{
@@ -75,7 +76,6 @@ export function Appbar() {
                   </Button>
                 </motion.div>
               </SignedOut>
-              <ThemeToggle />
             </div>
           </div>
         </motion.div>

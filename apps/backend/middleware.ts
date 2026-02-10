@@ -45,7 +45,7 @@ export async function authMiddleware(
     const decoded = jwt.verify(token, formattedKey, {
       algorithms: ["RS256"],
       issuer:
-        process.env.CLERK_ISSUER || "http://localhost:3000",
+        process.env.CLERK_ISSUER || "http://localhost:3000 || https://pure-promise.com",
       complete: true,
     });
 
