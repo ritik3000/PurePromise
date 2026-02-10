@@ -88,8 +88,8 @@ export const brands = [
 ];
 
 export const stats = [
-  { value: "50+", label: "Couple Photos Generated" },
-  { value: "8+", label: "Happy Couples" },
-  { value: "80%", label: "Satisfaction Rate" },
+  { value: "1000+", label: "Couple Photos Generated" },
+  { value: "100+", label: "Happy Couples" },
+  { value: "95%", label: "Satisfaction Rate" },
   { value: "24/7", label: "AI Support" },
 ];
