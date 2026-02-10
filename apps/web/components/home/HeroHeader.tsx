@@ -37,7 +37,10 @@ export function HeroHeader() {
       </h1>
 
       <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-       Choose a romantic scene. Get stunning couple portraits in seconds.
+        Choose a romantic scene. Get stunning couple portraits in seconds.
+      </p>
+      <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto">
+        Your photos are completely private.
       </p>
 
       <div className="flex items-center justify-center gap-4">

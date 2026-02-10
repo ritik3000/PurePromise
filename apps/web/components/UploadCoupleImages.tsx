@@ -16,7 +16,7 @@ import { useAuth } from "@clerk/nextjs";
 import { BACKEND_URL, S3_PUBLIC_URL } from "@/app/config";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { X, ShieldCheck } from "lucide-react";
 
 const DEFAULT_MAX_IMAGES = 10;
 
@@ -144,6 +144,10 @@ export function UploadCoupleImages({
         {hint && (
           <p className="text-sm text-red-600 dark:text-red-500 mt-1.5 font-bold">{hint}</p>
         )}
+        <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1.5">
+          <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-500" />
+          Your photos are completely private and are deleted after use.
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-3">
