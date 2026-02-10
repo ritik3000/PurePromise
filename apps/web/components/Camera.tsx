@@ -163,6 +163,9 @@ export function Camera() {
           {images.length} images
         </span>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Wait a few minutes after generation before downloading. Downloads may take some time—please be patient.
+      </p>
 
       <motion.div
         className="columns-1 md:columns-3 lg:columns-3 gap-4"
