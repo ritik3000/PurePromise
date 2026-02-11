@@ -157,6 +157,9 @@ export function Camera() {
 
   return (
     <div className="space-y-4">
+      <p className="text-sm text-rose-700 dark:text-rose-200 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-lg px-4 py-3">
+        Show love on Instagram! Share your PurePromise generated photos, tag @purepromise1402, and receive 300 bonus credits.
+      </p>
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Your Gallery</h2>
         <span className="text-xs select-none bg-secondary/40 font-semibold border border-secondary text-muted-foreground px-2 py-1 rounded-full">
