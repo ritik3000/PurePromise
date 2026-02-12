@@ -40,9 +40,7 @@ export function HeroHeader() {
         Choose a romantic scene. Get stunning couple portraits in seconds.
       </p>
       <p className="text-xs sm:text-sm text-muted-foreground/90 max-w-xl mx-auto text-center px-2">
-        <span className="inline-flex items-center justify-center gap-1.5 flex-nowrap whitespace-nowrap">
-          Built with <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" aria-hidden /> by IIT & NIT engineers, formerly at Amazon and Cisco.
-        </span>
+        Built with <Heart className="inline-block h-3.5 w-3.5 sm:h-4 sm:w-4 align-middle shrink-0 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" aria-hidden /> by IIT & NIT alumni, formerly at Amazon and Cisco.
       </p>
 
       <div className="flex items-center justify-center gap-4">
