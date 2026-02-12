@@ -4,7 +4,7 @@ import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Heart, ShieldCheck, Sparkles } from "lucide-react";
 
 export function HeroHeader() {
   const router = useRouter();
@@ -39,8 +39,8 @@ export function HeroHeader() {
       <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
         Choose a romantic scene. Get stunning couple portraits in seconds.
       </p>
-      <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto">
-        Built with love by engineers from IIT & NIT, with experience at Amazon and Cisco.
+      <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto flex items-center justify-center gap-1.5 flex-wrap">
+        Built with <Heart className="h-4 w-4 shrink-0 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" aria-hidden /> by engineers from IIT & NIT, with experience at Amazon and Cisco.
       </p>
 
       <div className="flex items-center justify-center gap-4">
