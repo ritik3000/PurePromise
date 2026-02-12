@@ -40,7 +40,7 @@ export function HeroHeader() {
         Choose a romantic scene. Get stunning couple portraits in seconds.
       </p>
       <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto">
-        Built with love by engineers from IITs & NITs, with experience at Amazon and Cisco.
+        Built with love by engineers from IIT & NIT, with experience at Amazon and Cisco.
       </p>
 
       <div className="flex items-center justify-center gap-4">
