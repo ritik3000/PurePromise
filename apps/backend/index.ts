@@ -41,7 +41,7 @@ app.use(
 app.use(express.json());
 
 app.get("/pre-signed-url", async (req, res) => {
-  const key = `models/${Date.now()}_${Math.random()}.zip`;
+  const key = `models/${crypto.randomUUID()}.zip`;
   const url = S3Client.presign(key, {
     method: "PUT",
     accessKeyId: process.env.S3_ACCESS_KEY,
@@ -58,7 +58,7 @@ app.get("/pre-signed-url", async (req, res) => {
   });
 });
 
-/** Presigned URLs for couple images (non-zipped, up to 10). Key: couple-images/{userId}/{uploadId}/{index}.{ext} */
+/** Presigned URLs for couple images (non-zipped, up to 10). Key: couple-images/{userId}/{uploadId}/{uuid}.jpg */
 /** Get current user credits (auth required). Row is created only at user creation (webhook). */
 app.get("/credits", authMiddleware, async (req, res) => {
   try {
@@ -96,11 +96,11 @@ app.post("/credits/request", authMiddleware, async (req, res) => {
 
 app.post("/presigned-url/images", authMiddleware, async (req, res) => {
   const userId = req.userId!;
-  const uploadId = (req.body?.uploadId as string) || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  const uploadId = (req.body?.uploadId as string) || crypto.randomUUID();
   const count = Math.min(Math.max(Number(req.body?.count) || 1, 1), 10);
   const keys: { url: string; key: string }[] = [];
   for (let i = 0; i < count; i++) {
-    const key = `couple-images/${userId}/${uploadId}/${i}.jpg`;
+    const key = `couple-images/${userId}/${uploadId}/${crypto.randomUUID()}.jpg`;
     const url = S3Client.presign(key, {
       method: "PUT",
       accessKeyId: process.env.S3_ACCESS_KEY,
