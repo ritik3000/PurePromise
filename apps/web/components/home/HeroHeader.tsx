@@ -29,18 +29,13 @@ export function HeroHeader() {
       </div>
 
       <h1 className="text-4xl sm:text-5xl md:text-6xl text-primary lg:text-7xl font-bold tracking-tight max-w-4xl mx-auto leading-tight">
-      Your Love Story, Reimagined by {" "}
+      Get stunning {" "}
         <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">
-        AI
+        couple portraits in seconds
         </span>
-        .
       </h1>
-
       <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-        Choose a romantic scene. Get stunning couple portraits in seconds.
-      </p>
-      <p className="text-xs sm:text-sm text-muted-foreground/90 max-w-xl mx-auto text-center px-2">
-        Built with <Heart className="inline-block h-3.5 w-3.5 sm:h-4 sm:w-4 align-middle shrink-0 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" aria-hidden /> by IIT & NIT alumni, formerly at Amazon and Cisco.
+      Built with <Heart className="inline-block h-3.5 w-3.5 sm:h-4 sm:w-4 align-middle shrink-0 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" aria-hidden /> by IIT & NIT alumni, formerly at Amazon and Cisco
       </p>
 
       <div className="flex items-center justify-center gap-4">
