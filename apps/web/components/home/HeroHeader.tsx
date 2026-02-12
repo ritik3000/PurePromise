@@ -4,7 +4,7 @@ import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 
 export function HeroHeader() {
   const router = useRouter();
@@ -40,7 +40,7 @@ export function HeroHeader() {
         Choose a romantic scene. Get stunning couple portraits in seconds.
       </p>
       <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto">
-        Your photos are completely private.
+        Built with love by engineers from IITs & NITs, with experience at Amazon and Cisco.
       </p>
 
       <div className="flex items-center justify-center gap-4">
@@ -67,6 +67,10 @@ export function HeroHeader() {
           </Button>
         </SignedIn>
       </div>
+      <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto flex items-center justify-center gap-2">
+        <ShieldCheck className="h-4 w-4 shrink-0 text-green-500 dark:text-green-400" aria-hidden />
+        Your photos are completely secure and private.
+      </p>
     </motion.div>
   );
 }
