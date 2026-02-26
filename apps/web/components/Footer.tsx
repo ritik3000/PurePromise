@@ -60,7 +60,10 @@ export function Footer() {
 
         </div>
 
-        <div className="mt-12 border-t pt-8 text-center">
+        <div className="mt-12 border-t pt-8 text-center space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Created by IIT, Amazon & Cisco Alumni.
+          </p>
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} PurePromise. All rights reserved.
           </p>

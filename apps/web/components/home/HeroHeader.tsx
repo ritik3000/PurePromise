@@ -4,7 +4,7 @@ import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Heart, ShieldCheck, Sparkles } from "lucide-react";
 
 export function HeroHeader() {
   const router = useRouter();
@@ -29,18 +29,13 @@ export function HeroHeader() {
       </div>
 
       <h1 className="text-4xl sm:text-5xl md:text-6xl text-primary lg:text-7xl font-bold tracking-tight max-w-4xl mx-auto leading-tight">
-      Your Love Story, Reimagined by {" "}
+      Get stunning {" "}
         <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">
-        AI
+        couple portraits in seconds
         </span>
-        .
       </h1>
-
       <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-        Choose a romantic scene. Get stunning couple portraits in seconds.
-      </p>
-      <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto">
-        Your photos are completely private.
+      Built with <Heart className="inline-block h-3.5 w-3.5 sm:h-4 sm:w-4 align-middle shrink-0 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" aria-hidden /> by IIT & NIT alumni, formerly at Amazon and Cisco
       </p>
 
       <div className="flex items-center justify-center gap-4">
@@ -67,6 +62,10 @@ export function HeroHeader() {
           </Button>
         </SignedIn>
       </div>
+      <p className="text-sm text-muted-foreground/90 max-w-xl mx-auto flex items-center justify-center gap-2">
+        <ShieldCheck className="h-4 w-4 shrink-0 text-green-500 dark:text-green-400" aria-hidden />
+        Your photos are completely secure and private.
+      </p>
     </motion.div>
   );
 }
