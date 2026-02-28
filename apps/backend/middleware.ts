@@ -28,7 +28,6 @@ export async function authMiddleware(
     }
 
     // Debug logs
-    console.log("Received token:", token);
 
     // Get the JWT verification key from environment variable
     const publicKey = process.env.CLERK_JWT_PUBLIC_KEY!;
@@ -49,7 +48,6 @@ export async function authMiddleware(
       complete: true,
     });
 
-    console.log("Decoded token:", decoded);
 
     // Extract user ID from the decoded token
     const userId = (decoded as any).payload.sub;

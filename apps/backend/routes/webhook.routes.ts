@@ -24,7 +24,6 @@ router.post("/clerk", async (req, res) => {
   }).catch(() => {});
   // #endregion
   const SIGNING_SECRET = process.env.CLERK_SIGNING_SECRET;
-  console.log("SIGNING_SECRET", SIGNING_SECRET);
 
   // #region agent log
   fetch("http://127.0.0.1:7243/ingest/1a00abdd-af60-4b80-940b-7fc14120bf30", {

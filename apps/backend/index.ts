@@ -40,7 +40,7 @@ app.use(
 );
 app.use(express.json());
 
-app.get("/pre-signed-url", async (req, res) => {
+app.get("/pre-signed-url",authMiddleware, async (req, res) => {
   const key = `models/${crypto.randomUUID()}.zip`;
   const url = S3Client.presign(key, {
     method: "PUT",
