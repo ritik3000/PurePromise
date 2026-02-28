@@ -682,6 +682,10 @@ app.get("/feedback/post-generation-given", authMiddleware, async (req, res) => {
 
 app.use("/api/webhook", webhookRouter);
 
+app.get('/health', (req, res) => {
+  res.send('ok');
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
