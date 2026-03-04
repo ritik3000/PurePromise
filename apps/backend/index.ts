@@ -15,6 +15,7 @@ import { authMiddleware } from "./middleware";
 import dotenv from "dotenv";
 
 import { router as webhookRouter } from "./routes/webhook.routes";
+import { falWebhookIpAllowlist } from "./falWebhookAuth";
 import {
   getCredits,
   deductCredits,
@@ -32,7 +33,7 @@ const falAiModel = new FalAIModel();
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://pure-promise.com"],
+    origin: ["https://pure-promise.com"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -335,7 +336,7 @@ app.post("/pack/generate", authMiddleware, async (req, res) => {
   });
 
 
-app.get("/pack/bulk", async (req, res) => {
+app.get("/pack/bulk",authMiddleware, async (req, res) => {
   const packs = await prismaClient.packs.findMany({
     orderBy: [ { id: "asc" }, { name: "asc" }],
   });
@@ -391,7 +392,7 @@ app.get("/models", authMiddleware, async (req, res) => {
   });
 });
 
-app.post("/fal-ai/webhook/train", async (req, res) => {
+app.post("/fal-ai/webhook/train", falWebhookIpAllowlist, async (req, res) => {
   console.log("====================Received training webhook====================");
   console.log("Received training webhook:", req.body);
   const requestId = req.body.request_id as string;
@@ -495,7 +496,7 @@ app.post("/fal-ai/webhook/train", async (req, res) => {
   });
 });
 
-app.post("/fal-ai/webhook/image", async (req, res) => {
+app.post("/fal-ai/webhook/image", falWebhookIpAllowlist, async (req, res) => {
   // #region agent log
   fetch("http://127.0.0.1:7242/ingest/80d89e10-42ab-423c-9694-0caffe7315c6", {
     method: "POST",
@@ -638,7 +639,7 @@ app.post("/feedback", async (req, res) => {
           algorithms: ["RS256"],
           issuer:
             process.env.CLERK_ISSUER ||
-            "http://localhost:3000 || https://fe-staging.dxdev.space/",
+            "https:pure-promise.com",
           complete: true,
         }) as { payload?: { sub?: string } };
         if (decoded?.payload?.sub) userId = decoded.payload.sub;
