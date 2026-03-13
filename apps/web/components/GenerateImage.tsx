@@ -21,15 +21,15 @@ const MAX_IMAGES = 10;
 const REFERENCE_SAMPLE_SETS = [
   {
     label: "1 face – upload photos with 1 face",
-    urls: ["https://purepromise.s3.ap-south-1.amazonaws.com/models/single1.jpg"],
+    urls: ["https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/single1.jpg"],
   },
   {
     label: "2 faces – upload photos with 2 faces",
-    urls: ["https://purepromise.s3.ap-south-1.amazonaws.com/models/single2.avif"],
+    urls: ["https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/single2.jpg"],
   },
   {
     label: "3 faces – upload photos with 3 faces",
-    urls: ["https://purepromise.s3.ap-south-1.amazonaws.com/models/single3.jpg"],
+    urls: ["https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/single3.jpeg"],
   },
 ];
 

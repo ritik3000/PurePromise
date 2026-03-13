@@ -22,9 +22,9 @@ const DEFAULT_MAX_IMAGES = 10;
 
 /** Sample couple photos (clear faces) to show as upload examples */
 const SAMPLE_COUPLE_PHOTOS = [
-"https://purepromise.s3.ap-south-1.amazonaws.com/models/couple1.webp",
-"https://purepromise.s3.ap-south-1.amazonaws.com/models/couple2.webp",
-"https://purepromise.s3.ap-south-1.amazonaws.com/models/couple3.webp"
+"https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/couple1.jpg",
+"https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/couple2.jpeg",
+"https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/couple3.jpeg"
 ];
 
 export function UploadCoupleImages({
