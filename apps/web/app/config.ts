@@ -6,4 +6,4 @@ export const BACKEND_URL =
 // (or update this to a CloudFront distribution URL if you front the bucket).
 export const S3_PUBLIC_URL =
   process.env.NEXT_PUBLIC_S3_PUBLIC_URL ||
-  "https://purepromise-1.s3.ap-south-1.amazonaws.com";
+  "https://purepromise-12.s3.ap-south-1.amazonaws.com";
