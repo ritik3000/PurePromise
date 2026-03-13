@@ -52,25 +52,25 @@ export const testimonials = [
 
 export const carouselImages = [
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/valentine1.jpeg",
+    url: "https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/couplefinal.jpg",
     title: "Fashion Forward",
     description: "Stylish couple photography for modern pairs",
     style: "Fashion",
   },
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/ankitindufinal21.jpg",
+    url: "https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/ankitindufinal21.jpg",
     title: "Elegant Couple",
     description: "Timeless couple photos perfect for your album",
     style: "Elegant",
   },
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/europe3.jpeg",
+    url: "https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/ny2.jpeg",
     title: "Creative Couple",
     description: "Artistic couple shots with unique styling",
     style: "Creative",
   },
   {
-    url: "https://purepromise.s3.ap-south-1.amazonaws.com/models/valentine3.jpeg",
+    url: "https://purepromise-12.s3.ap-south-1.amazonaws.com/sample-images/europe3.jpeg",
     title: "Romantic Lifestyle",
     description: "Natural and intimate couple moments",
     style: "Romantic",

@@ -24,6 +24,11 @@ const nextConfig = {
             },
             {
                 protocol: "https",
+                hostname: "purepromise-12.s3.ap-south-1.amazonaws.com",
+                pathname: "/**",
+            },
+            {
+                protocol: "https",
                 hostname: "v3.fal.media",
                 pathname: "/**",
             },
